@@ -1,0 +1,38 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="crowd_three">
+    <static>true</static>
+    <!-- 站立者1 中间偏后 朝右 -->
+    <link name="standing1">
+      <pose>0 0.04 0.02 0 0 -1.57</pose>
+      <visual name="v">
+        <geometry><mesh><uri>model://person_standing/meshes/standing.dae</uri><scale>0.20 0.20 0.20</scale></mesh></geometry>
+      </visual>
+      <collision name="c">
+        <pose>0 0 0.02 0.04 0 0</pose>
+        <geometry><mesh><uri>model://person_standing/meshes/standing.dae</uri><scale>0.20 0.20 0.20</scale></mesh></geometry>
+      </collision>
+    </link>
+    <!-- 站立者2 左前 朝右 -->
+    <link name="standing2">
+      <pose>-0.20 -0.03 0.02 0 0 -1.27</pose>
+      <visual name="v">
+        <geometry><mesh><uri>model://person_standing/meshes/standing.dae</uri><scale>0.20 0.20 0.20</scale></mesh></geometry>
+      </visual>
+      <collision name="c">
+        <pose>0 0 0.02 0.04 0 0</pose>
+        <geometry><mesh><uri>model://person_standing/meshes/standing.dae</uri><scale>0.20 0.20 0.20</scale></mesh></geometry>
+      </collision>
+    </link>
+    <!-- 行走者 右侧中间 朝右 -->
+    <link name="walking1">
+      <pose>0.20 0.0 0.0 0 0 -1.47</pose>
+      <visual name="v">
+        <geometry><mesh><uri>model://person_walking_pose/meshes/walking.dae</uri><scale>0.20 0.20 0.20</scale></mesh></geometry>
+      </visual>
+      <collision name="c">
+        <geometry><mesh><uri>model://person_walking_pose/meshes/walking.dae</uri><scale>0.20 0.20 0.20</scale></mesh></geometry>
+      </collision>
+    </link>
+  </model>
+</sdf>

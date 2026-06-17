@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="building_normal">
+    <static>true</static>
+    <link name="body">
+      <pose>0 0 0.275 0 0 0</pose>
+      <visual name="body_v"><geometry><box><size>0.35 0.28 0.55</size></box></geometry>
+        <material><ambient>0.75 0.78 0.82 1.0</ambient><diffuse>0.75 0.78 0.82 1.0</diffuse></material></visual>
+      <collision name="body_c"><geometry><box><size>0.35 0.28 0.55</size></box></geometry></collision>
+    </link>
+    <link name="win0"><pose>0 0 0.10 0 0 0</pose>
+      <visual name="win0_v"><geometry><box><size>0.36 0.29 0.04</size></box></geometry>
+        <material><ambient>0.4 0.6 0.85 1.0</ambient><diffuse>0.4 0.6 0.85 1.0</diffuse></material></visual>
+    </link>
+    <joint name="w0_j" type="fixed"><parent>body</parent><child>win0</child></joint>
+    <link name="win1"><pose>0 0 0.22 0 0 0</pose>
+      <visual name="win1_v"><geometry><box><size>0.36 0.29 0.04</size></box></geometry>
+        <material><ambient>0.4 0.6 0.85 1.0</ambient><diffuse>0.4 0.6 0.85 1.0</diffuse></material></visual>
+    </link>
+    <joint name="w1_j" type="fixed"><parent>body</parent><child>win1</child></joint>
+    <link name="win2"><pose>0 0 0.34 0 0 0</pose>
+      <visual name="win2_v"><geometry><box><size>0.36 0.29 0.04</size></box></geometry>
+        <material><ambient>0.4 0.6 0.85 1.0</ambient><diffuse>0.4 0.6 0.85 1.0</diffuse></material></visual>
+    </link>
+    <joint name="w2_j" type="fixed"><parent>body</parent><child>win2</child></joint>
+  </model>
+</sdf>

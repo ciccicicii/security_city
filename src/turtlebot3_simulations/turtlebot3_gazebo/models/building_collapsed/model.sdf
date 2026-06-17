@@ -1,0 +1,106 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="building_collapsed">
+    <static>true</static>
+
+    <!-- 残留半截楼体，倾斜 -->
+    <link name="stump">
+      <pose>0 0 0.18 0.08 0.04 0</pose>
+      <visual name="sv">
+        <geometry><box><size>0.30 0.24 0.36</size></box></geometry>
+        <material><ambient>0.45 0.40 0.35 1.0</ambient></material>
+      </visual>
+      <collision name="sc">
+        <geometry><box><size>0.30 0.24 0.36</size></box></geometry>
+      </collision>
+    </link>
+
+    <!-- 断裂上半段横倒在地 -->
+    <link name="fallen_top">
+      <pose>0.10 -0.06 0.10 -1.4 0.15 0.2</pose>
+      <visual name="ftv">
+        <geometry><box><size>0.28 0.20 0.30</size></box></geometry>
+        <material><ambient>0.42 0.38 0.33 1.0</ambient></material>
+      </visual>
+      <collision name="ftc">
+        <geometry><box><size>0.28 0.20 0.30</size></box></geometry>
+      </collision>
+    </link>
+
+    <!-- 断裂的裂缝窗口带（碎裂效果） -->
+    <link name="cracked_win">
+      <pose>0 0 0.12 0 0 0</pose>
+      <visual name="cwv">
+        <geometry><box><size>0.31 0.25 0.03</size></box></geometry>
+        <material><ambient>0.35 0.30 0.25 1.0</ambient></material>
+      </visual>
+    </link>
+
+    <!-- 大碎块1 -->
+    <link name="rb1"><pose>0.15 -0.10 0.06 0.6 0.4 0.3</pose>
+      <visual name="rb1v"><geometry><box><size>0.12 0.08 0.06</size></box></geometry>
+        <material><ambient>0.50 0.45 0.40 1.0</ambient></material></visual></link>
+    <!-- 大碎块2 -->
+    <link name="rb2"><pose>-0.12 0.12 0.05 -0.4 -0.5 0.6</pose>
+      <visual name="rb2v"><geometry><box><size>0.10 0.07 0.05</size></box></geometry>
+        <material><ambient>0.48 0.43 0.38 1.0</ambient></material></visual></link>
+    <!-- 大碎块3 -->
+    <link name="rb3"><pose>0.05 0.16 0.04 0.3 0.7 -0.2</pose>
+      <visual name="rb3v"><geometry><box><size>0.09 0.08 0.04</size></box></geometry>
+        <material><ambient>0.52 0.47 0.42 1.0</ambient></material></visual></link>
+    <!-- 碎块4 -->
+    <link name="r4"><pose>-0.18 -0.05 0.03 0.8 -0.3 0.1</pose>
+      <visual name="r4v"><geometry><box><size>0.07 0.05 0.04</size></box></geometry>
+        <material><ambient>0.55 0.50 0.45 1.0</ambient></material></visual></link>
+    <!-- 碎块5 -->
+    <link name="r5"><pose>0.20 0.05 0.03 -0.5 0.2 -0.4</pose>
+      <visual name="r5v"><geometry><box><size>0.06 0.06 0.03</size></box></geometry>
+        <material><ambient>0.47 0.42 0.38 1.0</ambient></material></visual></link>
+
+    <!-- 地面小碎片 -->
+    <link name="d1"><pose>0.22 -0.02 0.01 0 0 0</pose>
+      <visual name="d1v"><geometry><box><size>0.04 0.03 0.02</size></box></geometry>
+        <material><ambient>0.50 0.45 0.40 1.0</ambient></material></visual></link>
+    <link name="d2"><pose>-0.16 0.08 0.01 0.4 0 0</pose>
+      <visual name="d2v"><geometry><box><size>0.03 0.04 0.02</size></box></geometry>
+        <material><ambient>0.53 0.48 0.43 1.0</ambient></material></visual></link>
+    <link name="d3"><pose>0.08 0.20 0.01 0 0.5 0</pose>
+      <visual name="d3v"><geometry><box><size>0.05 0.03 0.02</size></box></geometry>
+        <material><ambient>0.48 0.44 0.40 1.0</ambient></material></visual></link>
+    <link name="d4"><pose>-0.20 -0.12 0.01 0.6 0 0.3</pose>
+      <visual name="d4v"><geometry><box><size>0.03 0.03 0.02</size></box></geometry>
+        <material><ambient>0.51 0.46 0.41 1.0</ambient></material></visual></link>
+    <link name="d5"><pose>0.14 -0.15 0.02 0 0 0.7</pose>
+      <visual name="d5v"><geometry><box><size>0.04 0.04 0.02</size></box></geometry>
+        <material><ambient>0.49 0.44 0.39 1.0</ambient></material></visual></link>
+
+    <!-- 斜插的断柱 -->
+    <link name="pillar">
+      <pose>-0.10 -0.08 0.08 0.3 0.0 0.8</pose>
+      <visual name="pv"><geometry><box><size>0.04 0.04 0.25</size></box></geometry>
+        <material><ambient>0.60 0.55 0.50 1.0</ambient></material></visual>
+    </link>
+
+    <!-- 扭曲的钢筋/梁 -->
+    <link name="beam">
+      <pose>0.12 0.10 0.07 -0.2 0.8 0.5</pose>
+      <visual name="bv"><geometry><box><size>0.20 0.03 0.03</size></box></geometry>
+        <material><ambient>0.40 0.35 0.30 1.0</ambient></material></visual>
+    </link>
+
+    <joint name="j_ft" type="fixed"><parent>stump</parent><child>fallen_top</child></joint>
+    <joint name="j_cw" type="fixed"><parent>stump</parent><child>cracked_win</child></joint>
+    <joint name="j_r1" type="fixed"><parent>stump</parent><child>rb1</child></joint>
+    <joint name="j_r2" type="fixed"><parent>stump</parent><child>rb2</child></joint>
+    <joint name="j_r3" type="fixed"><parent>stump</parent><child>rb3</child></joint>
+    <joint name="j_r4" type="fixed"><parent>stump</parent><child>r4</child></joint>
+    <joint name="j_r5" type="fixed"><parent>stump</parent><child>r5</child></joint>
+    <joint name="j_d1" type="fixed"><parent>stump</parent><child>d1</child></joint>
+    <joint name="j_d2" type="fixed"><parent>stump</parent><child>d2</child></joint>
+    <joint name="j_d3" type="fixed"><parent>stump</parent><child>d3</child></joint>
+    <joint name="j_d4" type="fixed"><parent>stump</parent><child>d4</child></joint>
+    <joint name="j_d5" type="fixed"><parent>stump</parent><child>d5</child></joint>
+    <joint name="j_p" type="fixed"><parent>stump</parent><child>pillar</child></joint>
+    <joint name="j_b" type="fixed"><parent>stump</parent><child>beam</child></joint>
+  </model>
+</sdf>

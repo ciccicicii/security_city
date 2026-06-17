@@ -1,0 +1,74 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="building_smoke">
+    <static>true</static>
+
+    <!-- 主楼体：烟灰色 -->
+    <link name="body">
+      <pose>0 0 0.275 0 0 0</pose>
+      <visual name="body_v"><geometry><box><size>0.35 0.28 0.55</size></box></geometry>
+        <material><ambient>0.40 0.40 0.40 1.0</ambient><diffuse>0.38 0.38 0.38 1.0</diffuse></material></visual>
+      <collision name="body_c"><geometry><box><size>0.35 0.28 0.55</size></box></geometry></collision>
+    </link>
+
+    <!-- 窗户：浓黑 -->
+    <link name="win0"><pose>0 0 0.10 0 0 0</pose>
+      <visual name="w0v"><geometry><box><size>0.36 0.29 0.04</size></box></geometry>
+        <material><ambient>0.08 0.08 0.08 1.0</ambient><diffuse>0.06 0.06 0.06 1.0</diffuse></material></visual>
+    </link>
+    <link name="win1"><pose>0 0 0.22 0 0 0</pose>
+      <visual name="w1v"><geometry><box><size>0.36 0.29 0.04</size></box></geometry>
+        <material><ambient>0.10 0.10 0.10 1.0</ambient><diffuse>0.08 0.08 0.08 1.0</diffuse></material></visual>
+    </link>
+    <link name="win2"><pose>0 0 0.34 0 0 0</pose>
+      <visual name="w2v"><geometry><box><size>0.36 0.29 0.04</size></box></geometry>
+        <material><ambient>0.06 0.06 0.06 1.0</ambient><diffuse>0.04 0.04 0.04 1.0</diffuse></material></visual>
+    </link>
+
+    <!-- 窗口冒出的烟团 -->
+    <link name="win_smoke0"><pose>0 0.16 0.10 0 0 0</pose>
+      <visual name="ws0v"><geometry><sphere><radius>0.04</radius></sphere></geometry>
+        <material><ambient>0.3 0.3 0.3 0.5</ambient></material></visual></link>
+    <link name="win_smoke1"><pose>0 -0.16 0.22 0 0 0</pose>
+      <visual name="ws1v"><geometry><sphere><radius>0.04</radius></sphere></geometry>
+        <material><ambient>0.35 0.35 0.35 0.45</ambient></material></visual></link>
+    <link name="win_smoke2"><pose>0.16 0 0.34 0 0 0</pose>
+      <visual name="ws2v"><geometry><sphere><radius>0.03</radius></sphere></geometry>
+        <material><ambient>0.28 0.28 0.28 0.5</ambient></material></visual></link>
+
+    <!-- 楼顶烟团 — 间距拉大，水平错开 -->
+    <link name="smoke0"><pose>0.06 0.06 0.57 0 0 0</pose>
+      <visual name="s0v"><geometry><sphere><radius>0.05</radius></sphere></geometry>
+        <material><ambient>0.35 0.35 0.35 0.65</ambient></material></visual></link>
+    <link name="smoke1"><pose>-0.08 -0.05 0.62 0 0 0</pose>
+      <visual name="s1v"><geometry><sphere><radius>0.05</radius></sphere></geometry>
+        <material><ambient>0.42 0.42 0.42 0.5</ambient></material></visual></link>
+    <link name="smoke2"><pose>0.02 0.10 0.67 0 0 0</pose>
+      <visual name="s2v"><geometry><sphere><radius>0.04</radius></sphere></geometry>
+        <material><ambient>0.48 0.48 0.48 0.4</ambient></material></visual></link>
+    <link name="smoke3"><pose>-0.04 -0.09 0.72 0 0 0</pose>
+      <visual name="s3v"><geometry><sphere><radius>0.04</radius></sphere></geometry>
+        <material><ambient>0.55 0.55 0.55 0.3</ambient></material></visual></link>
+
+    <!-- 侧面灰渍 -->
+    <link name="stain1"><pose>0.18 0 0.18 0 0 0</pose>
+      <visual name="st1v"><geometry><box><size>0.04 0.10 0.08</size></box></geometry>
+        <material><ambient>0.25 0.25 0.25 0.8</ambient></material></visual></link>
+    <link name="stain2"><pose>-0.18 0 0.35 0 0 0</pose>
+      <visual name="st2v"><geometry><box><size>0.04 0.08 0.10</size></box></geometry>
+        <material><ambient>0.22 0.22 0.22 0.7</ambient></material></visual></link>
+
+    <joint name="j_w0" type="fixed"><parent>body</parent><child>win0</child></joint>
+    <joint name="j_w1" type="fixed"><parent>body</parent><child>win1</child></joint>
+    <joint name="j_w2" type="fixed"><parent>body</parent><child>win2</child></joint>
+    <joint name="j_ws0" type="fixed"><parent>body</parent><child>win_smoke0</child></joint>
+    <joint name="j_ws1" type="fixed"><parent>body</parent><child>win_smoke1</child></joint>
+    <joint name="j_ws2" type="fixed"><parent>body</parent><child>win_smoke2</child></joint>
+    <joint name="j_s0" type="fixed"><parent>body</parent><child>smoke0</child></joint>
+    <joint name="j_s1" type="fixed"><parent>body</parent><child>smoke1</child></joint>
+    <joint name="j_s2" type="fixed"><parent>body</parent><child>smoke2</child></joint>
+    <joint name="j_s3" type="fixed"><parent>body</parent><child>smoke3</child></joint>
+    <joint name="j_st1" type="fixed"><parent>body</parent><child>stain1</child></joint>
+    <joint name="j_st2" type="fixed"><parent>body</parent><child>stain2</child></joint>
+  </model>
+</sdf>
