@@ -1,0 +1,93 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="building_collapsed">
+    <static>true</static>
+    <!-- 倾倒的主楼体 -->
+    <link name="tilted_tower">
+      <pose>0 0.05 0.3 -1.2 0.1 0</pose>
+      <visual name="tt_v">
+        <geometry><box><size>0.5 0.4 0.8</size></box></geometry>
+        <material>
+          <ambient>0.45 0.4 0.35 1.0</ambient>
+          <diffuse>0.4 0.35 0.3 1.0</diffuse>
+        </material>
+      </visual>
+      <collision name="tt_c">
+        <geometry><box><size>0.5 0.4 0.8</size></box></geometry>
+      </collision>
+    </link>
+    <!-- 断裂的上半段 -->
+    <link name="broken_top">
+      <pose>0.1 -0.05 0.5 0.4 -0.8 0.2</pose>
+      <visual name="bt_v">
+        <geometry><box><size>0.3 0.25 0.4</size></box></geometry>
+        <material>
+          <ambient>0.4 0.38 0.33 1.0</ambient>
+          <diffuse>0.35 0.33 0.28 1.0</diffuse>
+        </material>
+      </visual>
+      <collision name="bt_c">
+        <geometry><box><size>0.3 0.25 0.4</size></box></geometry>
+      </collision>
+    </link>
+    <!-- 碎块 -->
+    <link name="rubble1">
+      <pose>0.18 -0.15 0.06 0.5 0.3 0</pose>
+      <visual name="r1_v">
+        <geometry><box><size>0.10 0.06 0.05</size></box></geometry>
+        <material><ambient>0.5 0.45 0.4 1.0</ambient></material>
+      </visual>
+    </link>
+    <link name="rubble2">
+      <pose>-0.2 0.12 0.04 0.3 -0.5 0.4</pose>
+      <visual name="r2_v">
+        <geometry><box><size>0.08 0.07 0.04</size></box></geometry>
+        <material><ambient>0.55 0.5 0.45 1.0</ambient></material>
+      </visual>
+    </link>
+    <link name="rubble3">
+      <pose>0.08 0.18 0.03 0.1 0.6 -0.2</pose>
+      <visual name="r3_v">
+        <geometry><box><size>0.06 0.08 0.04</size></box></geometry>
+        <material><ambient>0.5 0.5 0.45 1.0</ambient></material>
+      </visual>
+    </link>
+    <link name="rubble4">
+      <pose>-0.12 -0.1 0.05 1.0 -0.3 0.3</pose>
+      <visual name="r4_v">
+        <geometry><box><size>0.09 0.05 0.04</size></box></geometry>
+        <material><ambient>0.6 0.55 0.5 1.0</ambient></material>
+      </visual>
+    </link>
+    <!-- 小碎片 -->
+    <link name="debris1">
+      <pose>0.25 0.1 0.01 0 0 0</pose>
+      <visual name="d1_v">
+        <geometry><box><size>0.04 0.03 0.02</size></box></geometry>
+        <material><ambient>0.5 0.45 0.4 1.0</ambient></material>
+      </visual>
+    </link>
+    <link name="debris2">
+      <pose>-0.2 0.15 0.01 0.5 0 0</pose>
+      <visual name="d2_v">
+        <geometry><box><size>0.03 0.04 0.02</size></box></geometry>
+        <material><ambient>0.55 0.5 0.45 1.0</ambient></material>
+      </visual>
+    </link>
+    <link name="debris3">
+      <pose>0.16 -0.08 0.02 0 0.4 0</pose>
+      <visual name="d3_v">
+        <geometry><box><size>0.05 0.03 0.01</size></box></geometry>
+        <material><ambient>0.5 0.5 0.45 1.0</ambient></material>
+      </visual>
+    </link>
+    <joint name="bt_j" type="fixed"><parent>tilted_tower</parent><child>broken_top</child></joint>
+    <joint name="r1_j" type="fixed"><parent>tilted_tower</parent><child>rubble1</child></joint>
+    <joint name="r2_j" type="fixed"><parent>tilted_tower</parent><child>rubble2</child></joint>
+    <joint name="r3_j" type="fixed"><parent>tilted_tower</parent><child>rubble3</child></joint>
+    <joint name="r4_j" type="fixed"><parent>tilted_tower</parent><child>rubble4</child></joint>
+    <joint name="d1_j" type="fixed"><parent>tilted_tower</parent><child>debris1</child></joint>
+    <joint name="d2_j" type="fixed"><parent>tilted_tower</parent><child>debris2</child></joint>
+    <joint name="d3_j" type="fixed"><parent>tilted_tower</parent><child>debris3</child></joint>
+  </model>
+</sdf>

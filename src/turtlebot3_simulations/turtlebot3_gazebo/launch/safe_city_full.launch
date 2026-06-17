@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- 平安城市 — 一键启动全部流水线 -->
+  <!-- 用法: roslaunch turtlebot3_gazebo safe_city_full.launch -->
+
+  <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
+
+  <!-- 环境变量: 自定义模型路径 -->
+  <env name="GAZEBO_MODEL_PATH"
+       value="$(find turtlebot3_gazebo)/models:$(optenv GAZEBO_MODEL_PATH)"/>
+
+  <!-- 1. 启动 Gazebo 比赛场地 + 机器人 -->
+  <include file="$(find turtlebot3_gazebo)/launch/safe_city_world.launch">
+    <arg name="model" value="$(arg model)"/>
+  </include>
+
+  <!-- 2. TurtleBot3 远程遥控 -->
+  <include file="$(find turtlebot3_bringup)/launch/turtlebot3_remote.launch">
+    <arg name="model" value="$(arg model)"/>
+  </include>
+
+  <!-- 3. AMCL 定位（无预建地图时用 SLAM 替代） -->
+  <!-- 如果有预建地图则取消下面注释，并注释掉 SLAM 部分 -->
+  <!--
+  <node pkg="map_server" name="map_server" type="map_server"
+        args="$(find turtlebot3_gazebo)/maps/safe_city_map.yaml"/>
+  <include file="$(find turtlebot3_navigation)/launch/amcl.launch">
+    <arg name="initial_pose_x" value="-1.5"/>
+    <arg name="initial_pose_y" value="-1.5"/>
+    <arg name="initial_pose_a" value="0.0"/>
+  </include>
+  -->
+
+  <!-- 4. SLAM 建图（首次运行用，后续可用上面的预建地图） -->
+  <include file="$(find turtlebot3_slam)/launch/turtlebot3_slam.launch">
+    <arg name="slam_methods" value="gmapping"/>
+  </include>
+
+  <!-- 5. move_base 导航 -->
+  <include file="$(find turtlebot3_navigation)/launch/move_base.launch">
+    <arg name="model" value="$(arg model)"/>
+    <arg name="move_forward_only" value="false"/>
+  </include>
+
+  <!-- 6. 键盘遥控（可选，用于手动建图） -->
+  <include file="$(find turtlebot3_teleop)/launch/turtlebot3_teleop_key.launch"/>
+
+  <!-- 7. Rviz -->
+  <node pkg="rviz" type="rviz" name="rviz" required="false"
+        args="-d $(find turtlebot3_navigation)/rviz/turtlebot3_navigation.rviz"/>
+
+</launch>

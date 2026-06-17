@@ -1,0 +1,109 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="crowd_gathering">
+    <static>true</static>
+    <!-- 人物1：站立（中间前）— 引用 person_standing mesh -->
+    <link name="person1">
+      <pose>0 0 0.02 0 0 0</pose>
+      <visual name="p1_visual">
+        <geometry>
+          <mesh>
+            <uri>model://person_standing/meshes/standing.dae</uri>
+            <scale>0.20 0.20 0.20</scale>
+          </mesh>
+        </geometry>
+      </visual>
+      <collision name="p1_collision">
+        <pose>0 0 0.02 0.04 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://person_standing/meshes/standing.dae</uri>
+            <scale>0.20 0.20 0.20</scale>
+          </mesh>
+        </geometry>
+      </collision>
+    </link>
+    <!-- 人物2：行走姿态（右）— 引用 person_walking_pose mesh -->
+    <link name="person2">
+      <pose>0.08 0.05 0.0 0 0 0.15</pose>
+      <visual name="p2_visual">
+        <geometry>
+          <mesh>
+            <uri>model://person_walking_pose/meshes/walking.dae</uri>
+            <scale>0.20 0.20 0.20</scale>
+          </mesh>
+        </geometry>
+      </visual>
+      <collision name="p2_collision">
+        <geometry>
+          <mesh>
+            <uri>model://person_walking_pose/meshes/walking.dae</uri>
+            <scale>0.20 0.20 0.20</scale>
+          </mesh>
+        </geometry>
+      </collision>
+    </link>
+    <!-- 人物3：行走姿态（左）— 引用 person_running_pose mesh -->
+    <link name="person3">
+      <pose>-0.08 0.0 0.0 0 0 -0.1</pose>
+      <visual name="p3_visual">
+        <geometry>
+          <mesh>
+            <uri>model://person_running_pose/meshes/walking.dae</uri>
+            <scale>0.20 0.20 0.20</scale>
+          </mesh>
+        </geometry>
+      </visual>
+      <collision name="p3_collision">
+        <geometry>
+          <mesh>
+            <uri>model://person_running_pose/meshes/walking.dae</uri>
+            <scale>0.20 0.20 0.20</scale>
+          </mesh>
+        </geometry>
+      </collision>
+    </link>
+    <!-- 人物4：站立（后方） -->
+    <link name="person4">
+      <pose>0.03 -0.10 0.02 0 0 3.0</pose>
+      <visual name="p4_visual">
+        <geometry>
+          <mesh>
+            <uri>model://person_standing/meshes/standing.dae</uri>
+            <scale>0.20 0.20 0.20</scale>
+          </mesh>
+        </geometry>
+      </visual>
+      <collision name="p4_collision">
+        <pose>0 0 0.02 0.04 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://person_standing/meshes/standing.dae</uri>
+            <scale>0.20 0.20 0.20</scale>
+          </mesh>
+        </geometry>
+      </collision>
+    </link>
+    <!-- 人物5：站立（左前） -->
+    <link name="person5">
+      <pose>-0.04 0.08 0.02 0 0 0.5</pose>
+      <visual name="p5_visual">
+        <geometry>
+          <mesh>
+            <uri>model://person_standing/meshes/standing.dae</uri>
+            <scale>0.20 0.20 0.20</scale>
+          </mesh>
+        </geometry>
+      </visual>
+      <collision name="p5_collision">
+        <pose>0 0 0.02 0.04 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://person_standing/meshes/standing.dae</uri>
+            <scale>0.20 0.20 0.20</scale>
+          </mesh>
+        </geometry>
+      </collision>
+    </link>
+  </model>
+</sdf>

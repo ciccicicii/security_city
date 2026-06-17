@@ -1,0 +1,82 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="building_smoke">
+    <static>true</static>
+    <!-- 主楼体 — 冒烟高楼 -->
+    <link name="main_body">
+      <pose>0 0 0.6 0 0 0</pose>
+      <visual name="body_v">
+        <geometry><box><size>0.5 0.4 1.2</size></box></geometry>
+        <material>
+          <ambient>0.45 0.45 0.45 1.0</ambient>
+          <diffuse>0.4 0.4 0.4 1.0</diffuse>
+        </material>
+      </visual>
+      <collision name="body_c">
+        <geometry><box><size>0.5 0.4 1.2</size></box></geometry>
+      </collision>
+    </link>
+    <!-- 灰色窗口 -->
+    <link name="dark_win1">
+      <pose>0 0.21 0.85 0 0 0</pose>
+      <visual name="dw1_v">
+        <geometry><box><size>0.15 0.02 0.08</size></box></geometry>
+        <material><ambient>0.25 0.25 0.25 1.0</ambient></material>
+      </visual>
+    </link>
+    <link name="dark_win2">
+      <pose>0 -0.21 0.55 0 0 0</pose>
+      <visual name="dw2_v">
+        <geometry><box><size>0.15 0.02 0.08</size></box></geometry>
+        <material><ambient>0.25 0.25 0.25 1.0</ambient></material>
+      </visual>
+    </link>
+    <!-- 楼顶烟雾 -->
+    <link name="smoke1">
+      <pose>0.0 0.05 1.30 0 0 0</pose>
+      <visual name="s1_v">
+        <geometry><sphere><radius>0.10</radius></sphere></geometry>
+        <material>
+          <ambient>0.5 0.5 0.5 0.6</ambient>
+          <diffuse>0.45 0.45 0.45 0.55</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="smoke2">
+      <pose>0.08 -0.05 1.38 0 0 0</pose>
+      <visual name="s2_v">
+        <geometry><sphere><radius>0.08</radius></sphere></geometry>
+        <material>
+          <ambient>0.55 0.55 0.55 0.5</ambient>
+          <diffuse>0.5 0.5 0.5 0.45</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="smoke3">
+      <pose>-0.06 0.0 1.42 0 0 0</pose>
+      <visual name="s3_v">
+        <geometry><sphere><radius>0.07</radius></sphere></geometry>
+        <material>
+          <ambient>0.45 0.45 0.45 0.5</ambient>
+          <diffuse>0.4 0.4 0.4 0.45</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="smoke4">
+      <pose>0.02 -0.08 1.48 0 0 0</pose>
+      <visual name="s4_v">
+        <geometry><sphere><radius>0.06</radius></sphere></geometry>
+        <material>
+          <ambient>0.5 0.5 0.5 0.4</ambient>
+          <diffuse>0.45 0.45 0.45 0.35</diffuse>
+        </material>
+      </visual>
+    </link>
+    <joint name="dw1_j" type="fixed"><parent>main_body</parent><child>dark_win1</child></joint>
+    <joint name="dw2_j" type="fixed"><parent>main_body</parent><child>dark_win2</child></joint>
+    <joint name="s1_j" type="fixed"><parent>main_body</parent><child>smoke1</child></joint>
+    <joint name="s2_j" type="fixed"><parent>main_body</parent><child>smoke2</child></joint>
+    <joint name="s3_j" type="fixed"><parent>main_body</parent><child>smoke3</child></joint>
+    <joint name="s4_j" type="fixed"><parent>main_body</parent><child>smoke4</child></joint>
+  </model>
+</sdf>
