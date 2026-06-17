@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: turtlebot3_autorace_detect
+Version: 1.1.0
+Summary: AutoRace ROS packages for feature detection with TurtleBot3 Auto
+Home-page: http://wiki.ros.org/turtlebot3_autorace
+Author: Ashe Kim <ashekim@robotis.com>, Will Son <willson@robotis.com>
+Author-email: UNKNOWN
+License: Apache 2.0
+Description: UNKNOWN
+Platform: UNKNOWN

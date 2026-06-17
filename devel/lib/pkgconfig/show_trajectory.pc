@@ -1,0 +1,8 @@
+prefix=/home/mw/catkin_ws/devel
+
+Name: show_trajectory
+Description: Description of show_trajectory
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

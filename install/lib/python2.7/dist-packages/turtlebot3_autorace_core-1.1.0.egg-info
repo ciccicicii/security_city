@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: turtlebot3_autorace_core
+Version: 1.1.0
+Summary: TurtleBot3 AutoRace ROS package that TurtleBot3 Auto's core
+Home-page: http://wiki.ros.org/turtlebot3_autorace
+Author: Ashe Kim <ashekim@robotis.com>, Will Son <willson@robotis.com>
+Author-email: UNKNOWN
+License: Apache 2.0
+Description: UNKNOWN
+Platform: UNKNOWN
