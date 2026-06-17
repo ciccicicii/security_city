@@ -38,6 +38,9 @@ else:
 BURGER_MAX_LIN_VEL = 0.22
 BURGER_MAX_ANG_VEL = 2.84
 
+MOGUARDER_MAX_LIN_VEL = 0.16
+MOGUARDER_MAX_ANG_VEL = 0.90
+
 WAFFLE_MAX_LIN_VEL = 0.26
 WAFFLE_MAX_ANG_VEL = 1.82
 
@@ -52,8 +55,8 @@ Moving around:
    a    s    d
         x
 
-w/x : increase/decrease linear velocity (Burger : ~ 0.22, Waffle and Waffle Pi : ~ 0.26)
-a/d : increase/decrease angular velocity (Burger : ~ 2.84, Waffle and Waffle Pi : ~ 1.82)
+w/x : increase/decrease linear velocity (Burger : ~ 0.22, MoGuarder : ~ 0.16, Waffle and Waffle Pi : ~ 0.26)
+a/d : increase/decrease angular velocity (Burger : ~ 2.84, MoGuarder : ~ 0.90, Waffle and Waffle Pi : ~ 1.82)
 
 space key, s : force stop
 
@@ -113,6 +116,8 @@ def constrain(input, low, high):
 def checkLinearLimitVelocity(vel):
     if turtlebot3_model == "burger":
       vel = constrain(vel, -BURGER_MAX_LIN_VEL, BURGER_MAX_LIN_VEL)
+    elif turtlebot3_model == "moguarder":
+      vel = constrain(vel, -MOGUARDER_MAX_LIN_VEL, MOGUARDER_MAX_LIN_VEL)
     elif turtlebot3_model == "waffle" or turtlebot3_model == "waffle_pi":
       vel = constrain(vel, -WAFFLE_MAX_LIN_VEL, WAFFLE_MAX_LIN_VEL)
     else:
@@ -123,6 +128,8 @@ def checkLinearLimitVelocity(vel):
 def checkAngularLimitVelocity(vel):
     if turtlebot3_model == "burger":
       vel = constrain(vel, -BURGER_MAX_ANG_VEL, BURGER_MAX_ANG_VEL)
+    elif turtlebot3_model == "moguarder":
+      vel = constrain(vel, -MOGUARDER_MAX_ANG_VEL, MOGUARDER_MAX_ANG_VEL)
     elif turtlebot3_model == "waffle" or turtlebot3_model == "waffle_pi":
       vel = constrain(vel, -WAFFLE_MAX_ANG_VEL, WAFFLE_MAX_ANG_VEL)
     else:

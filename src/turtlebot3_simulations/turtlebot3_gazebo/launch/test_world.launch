@@ -3,7 +3,7 @@
   <env name="GAZEBO_MODEL_PATH"
        value="$(find turtlebot3_gazebo)/models:$(find turtlebot3_gazebo)/models/destruction:$(optenv GAZEBO_MODEL_PATH)"/>
 
-  <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
+  <arg name="model" default="moguarder" doc="model type [moguarder]"/>
   <arg name="x_pos" default="-1.67"/>
   <arg name="y_pos" default="1.0"/>
   <arg name="z_pos" default="0.0"/>
@@ -17,7 +17,8 @@
     <arg name="debug" value="false"/>
   </include>
 
-  <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf_next/turtlebot3_moguarder.urdf.xacro" />
+  <param name="robot_description"
+         command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf_next/turtlebot3_moguarder.urdf.xacro" />
 
   <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf"
         args="-urdf -model turtlebot3_moguarder -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -Y -1.55 -param robot_description" />

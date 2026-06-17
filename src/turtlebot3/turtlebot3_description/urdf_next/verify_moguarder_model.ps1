@@ -1,9 +1,21 @@
 $ErrorActionPreference = "Stop"
 
 $modelDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$workspaceRoot = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $modelDir)))
 $urdf = Join-Path $modelDir "turtlebot3_moguarder.urdf.xacro"
 $gazebo = Join-Path $modelDir "turtlebot3_moguarder.gazebo.xacro"
 $commonProperties = Join-Path $modelDir "common_properties.xacro"
+$teleop = Join-Path $workspaceRoot "src/turtlebot3/turtlebot3_teleop/nodes/turtlebot3_teleop_key"
+$teleopLaunch = Join-Path $workspaceRoot "src/turtlebot3/turtlebot3_teleop/launch/turtlebot3_teleop_key.launch"
+$worldLaunch = Join-Path $workspaceRoot "src/turtlebot3_simulations/turtlebot3_gazebo/launch/turtlebot3_world.launch"
+$emptyWorldLaunch = Join-Path $workspaceRoot "src/turtlebot3_simulations/turtlebot3_gazebo/launch/turtlebot3_empty_world.launch"
+$remoteLaunch = Join-Path $workspaceRoot "src/turtlebot3/turtlebot3_bringup/launch/turtlebot3_remote.launch"
+$descriptionLaunch = Join-Path $workspaceRoot "src/turtlebot3/turtlebot3_bringup/launch/includes/description.launch.xml"
+$navigationLaunch = Join-Path $workspaceRoot "src/turtlebot3/turtlebot3_navigation/launch/turtlebot3_navigation.launch"
+$moveBaseLaunch = Join-Path $workspaceRoot "src/turtlebot3/turtlebot3_navigation/launch/move_base.launch"
+$slamLaunch = Join-Path $workspaceRoot "src/turtlebot3/turtlebot3_slam/launch/turtlebot3_slam.launch"
+$moguarderCostmap = Join-Path $workspaceRoot "src/turtlebot3/turtlebot3_navigation/param/costmap_common_params_moguarder.yaml"
+$moguarderDwa = Join-Path $workspaceRoot "src/turtlebot3/turtlebot3_navigation/param/dwa_local_planner_params_moguarder.yaml"
 
 if (-not (Test-Path $urdf)) {
   throw "Missing improved URDF/XACRO model: $urdf"
@@ -15,6 +27,25 @@ if (-not (Test-Path $gazebo)) {
 
 if (-not (Test-Path $commonProperties)) {
   throw "Missing local common properties include: $commonProperties"
+}
+
+if (-not (Test-Path $teleop)) {
+  throw "Missing teleop keyboard file: $teleop"
+}
+
+$requiredLaunchFiles = @($teleopLaunch, $worldLaunch, $emptyWorldLaunch, $remoteLaunch, $descriptionLaunch, $navigationLaunch, $moveBaseLaunch, $slamLaunch)
+foreach ($launchFile in $requiredLaunchFiles) {
+  if (-not (Test-Path $launchFile)) {
+    throw "Missing launch file: $launchFile"
+  }
+}
+
+if (-not (Test-Path $moguarderCostmap)) {
+  throw "Missing MoGuarder costmap params: $moguarderCostmap"
+}
+
+if (-not (Test-Path $moguarderDwa)) {
+  throw "Missing MoGuarder DWA params: $moguarderDwa"
 }
 
 $urdfXml = [xml](Get-Content -Raw $urdf)
@@ -62,7 +93,11 @@ $expectedLinks = @(
   "deck_fastener_fl_link",
   "deck_fastener_fr_link",
   "deck_fastener_rl_link",
-  "deck_fastener_rr_link"
+  "deck_fastener_rr_link",
+  "wheel_left_front_link",
+  "wheel_right_front_link",
+  "wheel_left_rear_link",
+  "wheel_right_rear_link"
 )
 
 foreach ($linkName in $expectedLinks) {
@@ -96,13 +131,21 @@ $expectedJoints = @(
   "deck_fastener_fl_joint",
   "deck_fastener_fr_joint",
   "deck_fastener_rl_joint",
-  "deck_fastener_rr_joint"
+  "deck_fastener_rr_joint",
+  "wheel_left_front_joint",
+  "wheel_right_front_joint",
+  "wheel_left_rear_joint",
+  "wheel_right_rear_joint"
 )
 
 foreach ($jointName in $expectedJoints) {
   if ($jointNames -notcontains $jointName) {
     throw "Expected Low Scout structure joint missing: $jointName"
   }
+}
+
+if ($linkNames -contains "caster_back_link" -or $jointNames -contains "caster_back_joint") {
+  throw "Four-wheel model should not keep the original rear caster"
 }
 
 $scanJoint = $robot.joint | Where-Object { $_.name -eq "scan_joint" }
@@ -150,13 +193,37 @@ if (-not $frontShellJoint) {
   throw "front_shell_joint missing; improved body shell was not added"
 }
 
-$wheelLeftJoint = $robot.joint | Where-Object { $_.name -eq "wheel_left_joint" }
-$wheelRightJoint = $robot.joint | Where-Object { $_.name -eq "wheel_right_joint" }
-if ($wheelLeftJoint.origin.xyz -ne "0.0 0.075 0.023" -or $wheelRightJoint.origin.xyz -ne "0.0 -0.075 0.023") {
-  throw "Wheel joint origins do not match the narrowed chassis"
+$wheelLeftFrontJoint = $robot.joint | Where-Object { $_.name -eq "wheel_left_front_joint" }
+$wheelRightFrontJoint = $robot.joint | Where-Object { $_.name -eq "wheel_right_front_joint" }
+$wheelLeftRearJoint = $robot.joint | Where-Object { $_.name -eq "wheel_left_rear_joint" }
+$wheelRightRearJoint = $robot.joint | Where-Object { $_.name -eq "wheel_right_rear_joint" }
+if ($wheelLeftFrontJoint.origin.xyz -ne "0.060 0.078 0.023" -or
+    $wheelRightFrontJoint.origin.xyz -ne "0.060 -0.078 0.023" -or
+    $wheelLeftRearJoint.origin.xyz -ne "-0.060 0.078 0.023" -or
+    $wheelRightRearJoint.origin.xyz -ne "-0.060 -0.078 0.023") {
+  throw "Four-wheel joint origins do not match the UGV chassis layout"
 }
 
 $gazeboRobot = $gazeboXml.robot
+$wheelFriction = @{
+  "wheel_left_front_link" = @("0.75", "0.35")
+  "wheel_right_front_link" = @("0.75", "0.35")
+  "wheel_left_rear_link" = @("0.85", "0.40")
+  "wheel_right_rear_link" = @("0.85", "0.40")
+}
+
+foreach ($wheelName in $wheelFriction.Keys) {
+  $wheelBlock = $gazeboRobot.gazebo | Where-Object { $_.reference -eq $wheelName }
+  if (-not $wheelBlock) {
+    throw "Missing Gazebo friction block for $wheelName"
+  }
+
+  $expected = $wheelFriction[$wheelName]
+  if ([string]$wheelBlock.mu1 -ne $expected[0] -or [string]$wheelBlock.mu2 -ne $expected[1]) {
+    throw "Unexpected friction for $wheelName, expected mu1=$($expected[0]) mu2=$($expected[1]), found mu1=$($wheelBlock.mu1) mu2=$($wheelBlock.mu2)"
+  }
+}
+
 $sensorBlock = $gazeboRobot.gazebo | Where-Object { $_.reference -eq "base_scan" }
 if (-not $sensorBlock) {
   throw "base_scan Gazebo sensor block missing"
@@ -200,17 +267,85 @@ if ([decimal]$leftRangeBlock.sensor.ray.range.max -ne 0.8 -or [decimal]$rightRan
   throw "Side range sensor max range should be 0.8"
 }
 
-$diffDrive = $gazeboRobot.gazebo.plugin | Where-Object { $_.name -eq "moguarder_controller" }
-if (-not $diffDrive) {
-  throw "moguarder_controller diff-drive plugin missing"
+$skidSteer = $gazeboRobot.gazebo.plugin | Where-Object { $_.name -eq "moguarder_skid_steer_controller" }
+if (-not $skidSteer) {
+  throw "moguarder_skid_steer_controller plugin missing"
 }
 
-if ([decimal]$diffDrive.wheelSeparation -ne 0.150) {
-  throw "wheelSeparation should be 0.150, found $($diffDrive.wheelSeparation)"
+if ($skidSteer.filename -ne "libgazebo_ros_skid_steer_drive.so") {
+  throw "Skid-steer plugin filename should be libgazebo_ros_skid_steer_drive.so, found $($skidSteer.filename)"
 }
 
-if ([decimal]$diffDrive.wheelDiameter -ne 0.066) {
-  throw "wheelDiameter should be 0.066, found $($diffDrive.wheelDiameter)"
+if ($skidSteer.leftFrontJoint -ne "wheel_left_front_joint" -or
+    $skidSteer.rightFrontJoint -ne "wheel_right_front_joint" -or
+    $skidSteer.leftRearJoint -ne "wheel_left_rear_joint" -or
+    $skidSteer.rightRearJoint -ne "wheel_right_rear_joint") {
+  throw "Skid-steer plugin should drive all four wheel joints"
+}
+
+if ([decimal]$skidSteer.wheelSeparation -ne 0.156) {
+  throw "wheelSeparation should be 0.156, found $($skidSteer.wheelSeparation)"
+}
+
+if ([decimal]$skidSteer.wheelDiameter -ne 0.066) {
+  throw "wheelDiameter should be 0.066, found $($skidSteer.wheelDiameter)"
+}
+
+if ($skidSteer.commandTopic -ne "cmd_vel" -or $skidSteer.odometryTopic -ne "odom") {
+  throw "Skid-steer plugin topics should remain cmd_vel and odom"
+}
+
+$oldDiffDrive = $gazeboRobot.gazebo.plugin | Where-Object { $_.filename -eq "libgazebo_ros_diff_drive.so" }
+if ($oldDiffDrive) {
+  throw "Old diff-drive plugin should not remain in the skid-steer model"
+}
+
+$teleopText = Get-Content -Raw $teleop
+if ($teleopText -notmatch "MOGUARDER_MAX_LIN_VEL = 0\.16") {
+  throw "Teleop should define MoGuarder linear speed limit 0.16"
+}
+
+if ($teleopText -notmatch "MOGUARDER_MAX_ANG_VEL = 0\.90") {
+  throw "Teleop should define MoGuarder angular speed limit 0.90"
+}
+
+if ($teleopText -notmatch 'turtlebot3_model == "moguarder"') {
+  throw "Teleop should handle the moguarder model explicitly"
+}
+
+if ($teleopText -notmatch "MoGuarder : ~ 0\.16") {
+  throw "Teleop help text should mention MoGuarder speed limits"
+}
+
+$launchExpectations = @{
+  $teleopLaunch = '<arg name="model" default="moguarder"'
+  $worldLaunch = '<arg name="model" default="moguarder"'
+  $emptyWorldLaunch = '<arg name="model" default="moguarder"'
+  $remoteLaunch = '<arg name="model" default="moguarder"'
+  $navigationLaunch = '<arg name="model" default="moguarder"'
+  $moveBaseLaunch = '<arg name="model" default="moguarder"'
+  $slamLaunch = '<arg name="model" default="moguarder"'
+}
+
+foreach ($launchFile in $launchExpectations.Keys) {
+  $launchText = Get-Content -Raw $launchFile
+  if ($launchText -notmatch [regex]::Escape($launchExpectations[$launchFile])) {
+    throw "Launch file should default model to moguarder: $launchFile"
+  }
+}
+
+$worldText = Get-Content -Raw $worldLaunch
+$emptyWorldText = Get-Content -Raw $emptyWorldLaunch
+$descriptionText = Get-Content -Raw $descriptionLaunch
+if ($worldText -notmatch "urdf_next/turtlebot3_moguarder\.urdf\.xacro" -or
+    $emptyWorldText -notmatch "urdf_next/turtlebot3_moguarder\.urdf\.xacro" -or
+    $descriptionText -notmatch "urdf_next/turtlebot3_moguarder\.urdf\.xacro") {
+  throw "MoGuarder launch descriptions should load URDF from urdf_next"
+}
+
+$dwaText = Get-Content -Raw $moguarderDwa
+if ($dwaText -notmatch "max_vel_x: 0\.16" -or $dwaText -notmatch "max_vel_theta: 0\.90") {
+  throw "MoGuarder DWA params should match the skid-steer teleop limits"
 }
 
 Write-Host "MoGuarder improved model checks passed."
