@@ -35,14 +35,6 @@
     <material>Gazebo/FlatBlack</material>
   </gazebo>
 
-  <gazebo reference="lidar_guard_left_link">
-    <material>Gazebo/FlatBlack</material>
-  </gazebo>
-
-  <gazebo reference="lidar_guard_right_link">
-    <material>Gazebo/FlatBlack</material>
-  </gazebo>
-
   <gazebo reference="top_comm_module_link">
     <material>Gazebo/DarkGrey</material>
   </gazebo>
@@ -61,18 +53,6 @@
 
   <gazebo reference="right_yellow_trim_link">
     <material>Gazebo/Yellow</material>
-  </gazebo>
-
-  <gazebo reference="sensor_bridge_left_post_link">
-    <material>Gazebo/FlatBlack</material>
-  </gazebo>
-
-  <gazebo reference="sensor_bridge_right_post_link">
-    <material>Gazebo/FlatBlack</material>
-  </gazebo>
-
-  <gazebo reference="sensor_bridge_crossbar_link">
-    <material>Gazebo/FlatBlack</material>
   </gazebo>
 
   <gazebo reference="front_sensor_bezel_link">
@@ -166,7 +146,7 @@
       <rightFrontJoint>wheel_right_front_joint</rightFrontJoint>
       <leftRearJoint>wheel_left_rear_joint</leftRearJoint>
       <rightRearJoint>wheel_right_rear_joint</rightRearJoint>
-      <wheelSeparation>0.210</wheelSeparation>
+      <wheelSeparation>0.170</wheelSeparation>
       <wheelDiameter>0.090</wheelDiameter>
       <torque>18</torque>
       <broadcastTF>true</broadcastTF>

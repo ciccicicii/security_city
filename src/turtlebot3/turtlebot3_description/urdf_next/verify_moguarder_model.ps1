@@ -75,8 +75,6 @@ $expectedLinks = @(
   "left_side_plate_link",
   "right_side_plate_link",
   "lidar_mount_link",
-  "lidar_guard_left_link",
-  "lidar_guard_right_link",
   "top_comm_module_link",
   "left_range_link",
   "right_range_link",
@@ -84,9 +82,6 @@ $expectedLinks = @(
   "front_yellow_trim_link",
   "left_yellow_trim_link",
   "right_yellow_trim_link",
-  "sensor_bridge_left_post_link",
-  "sensor_bridge_right_post_link",
-  "sensor_bridge_crossbar_link",
   "front_sensor_bezel_link",
   "left_sensor_bezel_link",
   "right_sensor_bezel_link",
@@ -113,8 +108,6 @@ $expectedJoints = @(
   "left_side_plate_joint",
   "right_side_plate_joint",
   "lidar_mount_joint",
-  "lidar_guard_left_joint",
-  "lidar_guard_right_joint",
   "top_comm_module_joint",
   "left_range_joint",
   "right_range_joint",
@@ -122,9 +115,6 @@ $expectedJoints = @(
   "front_yellow_trim_joint",
   "left_yellow_trim_joint",
   "right_yellow_trim_joint",
-  "sensor_bridge_left_post_joint",
-  "sensor_bridge_right_post_joint",
-  "sensor_bridge_crossbar_joint",
   "front_sensor_bezel_joint",
   "left_sensor_bezel_joint",
   "right_sensor_bezel_joint",
@@ -148,23 +138,42 @@ if ($linkNames -contains "caster_back_link" -or $jointNames -contains "caster_ba
   throw "Four-wheel model should not keep the original rear caster"
 }
 
+foreach ($removedName in @("lidar_guard_left_link", "lidar_guard_right_link", "sensor_bridge_left_post_link", "sensor_bridge_right_post_link", "sensor_bridge_crossbar_link")) {
+  if ($linkNames -contains $removedName) {
+    throw "Removed self-occluding visual link should not remain: $removedName"
+  }
+}
+
+foreach ($removedName in @("lidar_guard_left_joint", "lidar_guard_right_joint", "sensor_bridge_left_post_joint", "sensor_bridge_right_post_joint", "sensor_bridge_crossbar_joint")) {
+  if ($jointNames -contains $removedName) {
+    throw "Removed self-occluding visual joint should not remain: $removedName"
+  }
+}
+
+$gazeboReferences = @($gazeboXml.robot.gazebo | Where-Object { $_.reference } | ForEach-Object { $_.reference })
+foreach ($removedName in @("lidar_guard_left_link", "lidar_guard_right_link", "sensor_bridge_left_post_link", "sensor_bridge_right_post_link", "sensor_bridge_crossbar_link")) {
+  if ($gazeboReferences -contains $removedName) {
+    throw "Removed self-occluding visual Gazebo reference should not remain: $removedName"
+  }
+}
+
 $scanJoint = $robot.joint | Where-Object { $_.name -eq "scan_joint" }
 if (-not $scanJoint) {
   throw "scan_joint missing"
 }
 
 $scanOrigin = $scanJoint.origin.xyz
-if ($scanOrigin -ne "0.035 0 0.085") {
+if ($scanOrigin -ne "0.060 0 0.095") {
   throw "Unexpected scan_joint origin: $scanOrigin"
 }
 
 $frontBumperJoint = $robot.joint | Where-Object { $_.name -eq "front_bumper_joint" }
-if ($frontBumperJoint.origin.xyz -ne "0.130 0 0.043") {
+if ($frontBumperJoint.origin.xyz -ne "0.118 0 0.043") {
   throw "Unexpected front_bumper_joint origin: $($frontBumperJoint.origin.xyz)"
 }
 
 $lidarMountJoint = $robot.joint | Where-Object { $_.name -eq "lidar_mount_joint" }
-if ($lidarMountJoint.origin.xyz -ne "0.035 0 0.052") {
+if ($lidarMountJoint.origin.xyz -ne "0.060 0 0.075") {
   throw "Unexpected lidar_mount_joint origin: $($lidarMountJoint.origin.xyz)"
 }
 
@@ -176,11 +185,6 @@ if ($topCommJoint.origin.xyz -ne "-0.030 0 0.115") {
 $topDeckJoint = $robot.joint | Where-Object { $_.name -eq "top_payload_deck_joint" }
 if ($topDeckJoint.origin.xyz -ne "-0.015 0 0.088") {
   throw "Unexpected top_payload_deck_joint origin: $($topDeckJoint.origin.xyz)"
-}
-
-$bridgeCrossbarJoint = $robot.joint | Where-Object { $_.name -eq "sensor_bridge_crossbar_joint" }
-if ($bridgeCrossbarJoint.origin.xyz -ne "0.035 0 0.128") {
-  throw "Unexpected sensor_bridge_crossbar_joint origin: $($bridgeCrossbarJoint.origin.xyz)"
 }
 
 $frontTrimJoint = $robot.joint | Where-Object { $_.name -eq "front_yellow_trim_joint" }
@@ -197,16 +201,24 @@ $wheelLeftFrontJoint = $robot.joint | Where-Object { $_.name -eq "wheel_left_fro
 $wheelRightFrontJoint = $robot.joint | Where-Object { $_.name -eq "wheel_right_front_joint" }
 $wheelLeftRearJoint = $robot.joint | Where-Object { $_.name -eq "wheel_left_rear_joint" }
 $wheelRightRearJoint = $robot.joint | Where-Object { $_.name -eq "wheel_right_rear_joint" }
-if ($wheelLeftFrontJoint.origin.xyz -ne "0.090 0.105 0.040" -or
-    $wheelRightFrontJoint.origin.xyz -ne "0.090 -0.105 0.040" -or
-    $wheelLeftRearJoint.origin.xyz -ne "-0.090 0.105 0.040" -or
-    $wheelRightRearJoint.origin.xyz -ne "-0.090 -0.105 0.040") {
+if ($wheelLeftFrontJoint.origin.xyz -ne "0.070 0.085 0.040" -or
+    $wheelRightFrontJoint.origin.xyz -ne "0.070 -0.085 0.040" -or
+    $wheelLeftRearJoint.origin.xyz -ne "-0.085 0.085 0.040" -or
+    $wheelRightRearJoint.origin.xyz -ne "-0.085 -0.085 0.040") {
   throw "Four-wheel joint origins do not match the UGV chassis layout"
 }
 
 $baseLink = $robot.link | Where-Object { $_.name -eq "base_link" }
 if ([decimal]$baseLink.inertial.mass.value -ne 2.40) {
   throw "Base chassis mass should be 2.40kg for the scaled UGV baseline"
+}
+
+if ($baseLink.collision.origin.xyz -ne "-0.010 0 0.028") {
+  throw "Base collision origin should keep the chassis below the low lidar scan plane, found $($baseLink.collision.origin.xyz)"
+}
+
+if ($baseLink.collision.geometry.box.size -ne "0.220 0.155 0.055") {
+  throw "Base collision size should keep the chassis below the low lidar scan plane, found $($baseLink.collision.geometry.box.size)"
 }
 
 $wheelLinks = @("wheel_left_front_link", "wheel_right_front_link", "wheel_left_rear_link", "wheel_right_rear_link")
@@ -300,8 +312,8 @@ if ($skidSteer.leftFrontJoint -ne "wheel_left_front_joint" -or
   throw "Skid-steer plugin should drive all four wheel joints"
 }
 
-if ([decimal]$skidSteer.wheelSeparation -ne 0.210) {
-  throw "wheelSeparation should be 0.210, found $($skidSteer.wheelSeparation)"
+if ([decimal]$skidSteer.wheelSeparation -ne 0.170) {
+  throw "wheelSeparation should be 0.170, found $($skidSteer.wheelSeparation)"
 }
 
 if ([decimal]$skidSteer.wheelDiameter -ne 0.090) {
@@ -403,6 +415,11 @@ if ($worldText -notmatch "urdf_next/turtlebot3_moguarder\.urdf\.xacro" -or
 $dwaText = Get-Content -Raw $moguarderDwa
 if ($dwaText -notmatch "max_vel_x: 0\.22" -or $dwaText -notmatch "max_vel_theta: 0\.75") {
   throw "MoGuarder DWA params should match the skid-steer teleop limits"
+}
+
+$costmapText = Get-Content -Raw $moguarderCostmap
+if ($costmapText -notmatch "footprint: \[\[-0\.135, -0\.105\], \[-0\.135, 0\.105\], \[0\.165, 0\.105\], \[0\.165, -0\.105\]\]") {
+  throw "MoGuarder costmap footprint should match the narrowed chassis"
 }
 
 Write-Host "MoGuarder improved model checks passed."

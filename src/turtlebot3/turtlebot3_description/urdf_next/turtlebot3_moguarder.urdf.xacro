@@ -13,14 +13,14 @@
 
   <link name="base_link">
     <collision>
-      <origin xyz="-0.010 0 0.060" rpy="0 0 0"/>
+      <origin xyz="-0.010 0 0.028" rpy="0 0 0"/>
       <geometry>
-        <box size="0.230 0.190 0.120"/>
+        <box size="0.220 0.155 0.055"/>
       </geometry>
     </collision>
 
     <inertial>
-      <origin xyz="-0.010 0 0.050" rpy="0 0 0"/>
+      <origin xyz="-0.010 0 0.048" rpy="0 0 0"/>
       <mass value="2.40"/>
       <inertia ixx="1.60e-02" ixy="0.0" ixz="0.0"
                iyy="2.20e-02" iyz="0.0"
@@ -38,7 +38,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.115 0.125 0.060"/>
+        <box size="0.110 0.105 0.060"/>
       </geometry>
       <material name="charcoal"/>
     </visual>
@@ -46,7 +46,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.115 0.125 0.060"/>
+        <box size="0.110 0.105 0.060"/>
       </geometry>
     </collision>
 
@@ -62,14 +62,14 @@
   <joint name="front_shell_joint" type="fixed">
     <parent link="base_link"/>
     <child link="front_shell_link"/>
-    <origin xyz="0.085 0 0.048" rpy="0 0 0"/>
+    <origin xyz="0.078 0 0.048" rpy="0 0 0"/>
   </joint>
 
   <link name="front_shell_link">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.090 0.165 0.045"/>
+        <box size="0.080 0.125 0.045"/>
       </geometry>
       <material name="charcoal"/>
     </visual>
@@ -77,7 +77,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.090 0.165 0.045"/>
+        <box size="0.080 0.125 0.045"/>
       </geometry>
     </collision>
 
@@ -100,7 +100,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.060 0.150 0.065"/>
+        <box size="0.055 0.115 0.065"/>
       </geometry>
       <material name="matte_black"/>
     </visual>
@@ -108,7 +108,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.060 0.150 0.065"/>
+        <box size="0.055 0.115 0.065"/>
       </geometry>
     </collision>
 
@@ -124,14 +124,14 @@
   <joint name="front_bumper_joint" type="fixed">
     <parent link="base_link"/>
     <child link="front_bumper_link"/>
-    <origin xyz="0.130 0 0.043" rpy="0 0 0"/>
+    <origin xyz="0.118 0 0.043" rpy="0 0 0"/>
   </joint>
 
   <link name="front_bumper_link">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.035 0.215 0.030"/>
+        <box size="0.030 0.155 0.030"/>
       </geometry>
       <material name="matte_black"/>
     </visual>
@@ -139,7 +139,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.035 0.215 0.030"/>
+        <box size="0.030 0.155 0.030"/>
       </geometry>
     </collision>
 
@@ -155,14 +155,14 @@
   <joint name="left_side_plate_joint" type="fixed">
     <parent link="base_link"/>
     <child link="left_side_plate_link"/>
-    <origin xyz="-0.015 0.077 0.042" rpy="0 0 0"/>
+    <origin xyz="-0.015 0.060 0.042" rpy="0 0 0"/>
   </joint>
 
   <link name="left_side_plate_link">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.145 0.014 0.040"/>
+        <box size="0.135 0.012 0.040"/>
       </geometry>
       <material name="matte_black"/>
     </visual>
@@ -170,7 +170,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.145 0.014 0.040"/>
+        <box size="0.135 0.012 0.040"/>
       </geometry>
     </collision>
 
@@ -186,14 +186,14 @@
   <joint name="right_side_plate_joint" type="fixed">
     <parent link="base_link"/>
     <child link="right_side_plate_link"/>
-    <origin xyz="-0.015 -0.077 0.042" rpy="0 0 0"/>
+    <origin xyz="-0.015 -0.060 0.042" rpy="0 0 0"/>
   </joint>
 
   <link name="right_side_plate_link">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.145 0.014 0.040"/>
+        <box size="0.135 0.012 0.040"/>
       </geometry>
       <material name="dark"/>
     </visual>
@@ -201,7 +201,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.145 0.014 0.040"/>
+        <box size="0.135 0.012 0.040"/>
       </geometry>
     </collision>
 
@@ -217,14 +217,14 @@
   <joint name="lidar_mount_joint" type="fixed">
     <parent link="base_link"/>
     <child link="lidar_mount_link"/>
-    <origin xyz="0.035 0 0.052" rpy="0 0 0"/>
+    <origin xyz="0.060 0 0.075" rpy="0 0 0"/>
   </joint>
 
   <link name="lidar_mount_link">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.060 0.072 0.014"/>
+        <box size="0.048 0.060 0.014"/>
       </geometry>
       <material name="dark"/>
     </visual>
@@ -232,7 +232,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.060 0.072 0.014"/>
+        <box size="0.048 0.060 0.014"/>
       </geometry>
     </collision>
 
@@ -242,68 +242,6 @@
       <inertia ixx="1.0e-05" ixy="0.0" ixz="0.0"
                iyy="1.0e-05" iyz="0.0"
                izz="1.2e-05" />
-    </inertial>
-  </link>
-
-  <joint name="lidar_guard_left_joint" type="fixed">
-    <parent link="base_link"/>
-    <child link="lidar_guard_left_link"/>
-    <origin xyz="0.035 0.044 0.086" rpy="0 0 0"/>
-  </joint>
-
-  <link name="lidar_guard_left_link">
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-        <box size="0.070 0.010 0.050"/>
-      </geometry>
-      <material name="matte_black"/>
-    </visual>
-
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-        <box size="0.070 0.010 0.050"/>
-      </geometry>
-    </collision>
-
-    <inertial>
-      <origin xyz="0 0 0" />
-      <mass value="0.018" />
-      <inertia ixx="8.0e-06" ixy="0.0" ixz="0.0"
-               iyy="8.0e-06" iyz="0.0"
-               izz="9.0e-06" />
-    </inertial>
-  </link>
-
-  <joint name="lidar_guard_right_joint" type="fixed">
-    <parent link="base_link"/>
-    <child link="lidar_guard_right_link"/>
-    <origin xyz="0.035 -0.044 0.086" rpy="0 0 0"/>
-  </joint>
-
-  <link name="lidar_guard_right_link">
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-        <box size="0.070 0.010 0.050"/>
-      </geometry>
-      <material name="matte_black"/>
-    </visual>
-
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-        <box size="0.070 0.010 0.050"/>
-      </geometry>
-    </collision>
-
-    <inertial>
-      <origin xyz="0 0 0" />
-      <mass value="0.018" />
-      <inertia ixx="8.0e-06" ixy="0.0" ixz="0.0"
-               iyy="8.0e-06" iyz="0.0"
-               izz="9.0e-06" />
     </inertial>
   </link>
 
@@ -341,7 +279,7 @@
   <joint name="left_range_joint" type="fixed">
     <parent link="base_link"/>
     <child link="left_range_link"/>
-    <origin xyz="0.020 0.090 0.055" rpy="0 0 1.5708"/>
+    <origin xyz="0.020 0.074 0.055" rpy="0 0 1.5708"/>
   </joint>
 
   <link name="left_range_link">
@@ -372,7 +310,7 @@
   <joint name="right_range_joint" type="fixed">
     <parent link="base_link"/>
     <child link="right_range_link"/>
-    <origin xyz="0.020 -0.090 0.055" rpy="0 0 -1.5708"/>
+    <origin xyz="0.020 -0.074 0.055" rpy="0 0 -1.5708"/>
   </joint>
 
   <link name="right_range_link">
@@ -410,7 +348,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.165 0.135 0.010"/>
+        <box size="0.155 0.110 0.010"/>
       </geometry>
       <material name="matte_black"/>
     </visual>
@@ -418,7 +356,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.165 0.135 0.010"/>
+        <box size="0.155 0.110 0.010"/>
       </geometry>
     </collision>
 
@@ -441,7 +379,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.010 0.145 0.012"/>
+        <box size="0.010 0.112 0.012"/>
       </geometry>
       <material name="safety_yellow"/>
     </visual>
@@ -449,7 +387,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.010 0.145 0.012"/>
+        <box size="0.010 0.112 0.012"/>
       </geometry>
     </collision>
 
@@ -465,14 +403,14 @@
   <joint name="left_yellow_trim_joint" type="fixed">
     <parent link="base_link"/>
     <child link="left_yellow_trim_link"/>
-    <origin xyz="-0.015 0.085 0.061" rpy="0 0 0"/>
+    <origin xyz="-0.015 0.068 0.061" rpy="0 0 0"/>
   </joint>
 
   <link name="left_yellow_trim_link">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.140 0.008 0.012"/>
+        <box size="0.130 0.007 0.012"/>
       </geometry>
       <material name="safety_yellow"/>
     </visual>
@@ -480,7 +418,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.140 0.008 0.012"/>
+        <box size="0.130 0.007 0.012"/>
       </geometry>
     </collision>
 
@@ -496,14 +434,14 @@
   <joint name="right_yellow_trim_joint" type="fixed">
     <parent link="base_link"/>
     <child link="right_yellow_trim_link"/>
-    <origin xyz="-0.015 -0.085 0.061" rpy="0 0 0"/>
+    <origin xyz="-0.015 -0.068 0.061" rpy="0 0 0"/>
   </joint>
 
   <link name="right_yellow_trim_link">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.140 0.008 0.012"/>
+        <box size="0.130 0.007 0.012"/>
       </geometry>
       <material name="safety_yellow"/>
     </visual>
@@ -511,7 +449,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.140 0.008 0.012"/>
+        <box size="0.130 0.007 0.012"/>
       </geometry>
     </collision>
 
@@ -521,93 +459,6 @@
       <inertia ixx="2.0e-06" ixy="0.0" ixz="0.0"
                iyy="2.0e-06" iyz="0.0"
                izz="3.0e-06" />
-    </inertial>
-  </link>
-
-  <joint name="sensor_bridge_left_post_joint" type="fixed">
-    <parent link="base_link"/>
-    <child link="sensor_bridge_left_post_link"/>
-    <origin xyz="0.035 0.048 0.107" rpy="0 0 0"/>
-  </joint>
-
-  <link name="sensor_bridge_left_post_link">
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-        <box size="0.010 0.010 0.052"/>
-      </geometry>
-      <material name="matte_black"/>
-    </visual>
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-        <box size="0.010 0.010 0.052"/>
-      </geometry>
-    </collision>
-    <inertial>
-      <origin xyz="0 0 0" />
-      <mass value="0.012" />
-      <inertia ixx="5.0e-06" ixy="0.0" ixz="0.0"
-               iyy="5.0e-06" iyz="0.0"
-               izz="5.0e-06" />
-    </inertial>
-  </link>
-
-  <joint name="sensor_bridge_right_post_joint" type="fixed">
-    <parent link="base_link"/>
-    <child link="sensor_bridge_right_post_link"/>
-    <origin xyz="0.035 -0.048 0.107" rpy="0 0 0"/>
-  </joint>
-
-  <link name="sensor_bridge_right_post_link">
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-        <box size="0.010 0.010 0.052"/>
-      </geometry>
-      <material name="matte_black"/>
-    </visual>
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-        <box size="0.010 0.010 0.052"/>
-      </geometry>
-    </collision>
-    <inertial>
-      <origin xyz="0 0 0" />
-      <mass value="0.012" />
-      <inertia ixx="5.0e-06" ixy="0.0" ixz="0.0"
-               iyy="5.0e-06" iyz="0.0"
-               izz="5.0e-06" />
-    </inertial>
-  </link>
-
-  <joint name="sensor_bridge_crossbar_joint" type="fixed">
-    <parent link="base_link"/>
-    <child link="sensor_bridge_crossbar_link"/>
-    <origin xyz="0.035 0 0.128" rpy="0 0 0"/>
-  </joint>
-
-  <link name="sensor_bridge_crossbar_link">
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-        <box size="0.070 0.112 0.010"/>
-      </geometry>
-      <material name="matte_black"/>
-    </visual>
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-        <box size="0.070 0.112 0.010"/>
-      </geometry>
-    </collision>
-    <inertial>
-      <origin xyz="0 0 0" />
-      <mass value="0.020" />
-      <inertia ixx="7.0e-06" ixy="0.0" ixz="0.0"
-               iyy="7.0e-06" iyz="0.0"
-               izz="9.0e-06" />
     </inertial>
   </link>
 
@@ -643,7 +494,7 @@
   <joint name="left_sensor_bezel_joint" type="fixed">
     <parent link="base_link"/>
     <child link="left_sensor_bezel_link"/>
-    <origin xyz="0.020 0.101 0.055" rpy="0 0 0"/>
+    <origin xyz="0.020 0.083 0.055" rpy="0 0 0"/>
   </joint>
 
   <link name="left_sensor_bezel_link">
@@ -672,7 +523,7 @@
   <joint name="right_sensor_bezel_joint" type="fixed">
     <parent link="base_link"/>
     <child link="right_sensor_bezel_link"/>
-    <origin xyz="0.020 -0.101 0.055" rpy="0 0 0"/>
+    <origin xyz="0.020 -0.083 0.055" rpy="0 0 0"/>
   </joint>
 
   <link name="right_sensor_bezel_link">
@@ -701,7 +552,7 @@
   <joint name="deck_fastener_fl_joint" type="fixed">
     <parent link="base_link"/>
     <child link="deck_fastener_fl_link"/>
-    <origin xyz="0.045 0.048 0.095" rpy="0 0 0"/>
+    <origin xyz="0.045 0.040 0.095" rpy="0 0 0"/>
   </joint>
 
   <link name="deck_fastener_fl_link">
@@ -724,7 +575,7 @@
   <joint name="deck_fastener_fr_joint" type="fixed">
     <parent link="base_link"/>
     <child link="deck_fastener_fr_link"/>
-    <origin xyz="0.045 -0.048 0.095" rpy="0 0 0"/>
+    <origin xyz="0.045 -0.040 0.095" rpy="0 0 0"/>
   </joint>
 
   <link name="deck_fastener_fr_link">
@@ -747,7 +598,7 @@
   <joint name="deck_fastener_rl_joint" type="fixed">
     <parent link="base_link"/>
     <child link="deck_fastener_rl_link"/>
-    <origin xyz="-0.075 0.048 0.095" rpy="0 0 0"/>
+    <origin xyz="-0.075 0.040 0.095" rpy="0 0 0"/>
   </joint>
 
   <link name="deck_fastener_rl_link">
@@ -770,7 +621,7 @@
   <joint name="deck_fastener_rr_joint" type="fixed">
     <parent link="base_link"/>
     <child link="deck_fastener_rr_link"/>
-    <origin xyz="-0.075 -0.048 0.095" rpy="0 0 0"/>
+    <origin xyz="-0.075 -0.040 0.095" rpy="0 0 0"/>
   </joint>
 
   <link name="deck_fastener_rr_link">
@@ -793,7 +644,7 @@
   <joint name="wheel_left_front_joint" type="continuous">
     <parent link="base_link"/>
     <child link="wheel_left_front_link"/>
-    <origin xyz="0.090 0.105 0.040" rpy="-1.57 0 0"/>
+    <origin xyz="0.070 0.085 0.040" rpy="-1.57 0 0"/>
     <axis xyz="0 0 1"/>
   </joint>
 
@@ -825,7 +676,7 @@
   <joint name="wheel_right_front_joint" type="continuous">
     <parent link="base_link"/>
     <child link="wheel_right_front_link"/>
-    <origin xyz="0.090 -0.105 0.040" rpy="-1.57 0 0"/>
+    <origin xyz="0.070 -0.085 0.040" rpy="-1.57 0 0"/>
     <axis xyz="0 0 1"/>
   </joint>
 
@@ -857,7 +708,7 @@
   <joint name="wheel_left_rear_joint" type="continuous">
     <parent link="base_link"/>
     <child link="wheel_left_rear_link"/>
-    <origin xyz="-0.090 0.105 0.040" rpy="-1.57 0 0"/>
+    <origin xyz="-0.085 0.085 0.040" rpy="-1.57 0 0"/>
     <axis xyz="0 0 1"/>
   </joint>
 
@@ -889,7 +740,7 @@
   <joint name="wheel_right_rear_joint" type="continuous">
     <parent link="base_link"/>
     <child link="wheel_right_rear_link"/>
-    <origin xyz="-0.090 -0.105 0.040" rpy="-1.57 0 0"/>
+    <origin xyz="-0.085 -0.085 0.040" rpy="-1.57 0 0"/>
     <axis xyz="0 0 1"/>
   </joint>
 
@@ -929,7 +780,7 @@
   <joint name="scan_joint" type="fixed">
     <parent link="base_link"/>
     <child link="base_scan"/>
-    <origin xyz="0.035 0 0.085" rpy="0 0 0"/>
+    <origin xyz="0.060 0 0.095" rpy="0 0 0"/>
   </joint>
 
   <link name="base_scan">
@@ -942,7 +793,7 @@
     </visual>
 
     <collision>
-      <origin xyz="0.015 0 -0.0065" rpy="0 0 0"/>
+      <origin xyz="0.015 0 0.000" rpy="0 0 0"/>
       <geometry>
         <cylinder length="0.0315" radius="0.055"/>
       </geometry>
