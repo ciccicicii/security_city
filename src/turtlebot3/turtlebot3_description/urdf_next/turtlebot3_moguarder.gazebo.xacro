@@ -104,41 +104,45 @@
   </gazebo>
 
   <gazebo reference="wheel_left_front_link">
-    <mu1>1.0</mu1>
-    <mu2>1.2</mu2>
-    <kp>500000.0</kp>
-    <kd>50.0</kd>
+    <mu1>1.00</mu1>
+    <mu2>0.35</mu2>
+    <kp>800000.0</kp>
+    <kd>8.0</kd>
     <minDepth>0.001</minDepth>
+    <maxVel>0.1</maxVel>
     <fdir1>1 0 0</fdir1>
     <material>Gazebo/FlatBlack</material>
   </gazebo>
 
   <gazebo reference="wheel_right_front_link">
-    <mu1>1.0</mu1>
-    <mu2>1.2</mu2>
-    <kp>500000.0</kp>
-    <kd>50.0</kd>
+    <mu1>1.00</mu1>
+    <mu2>0.35</mu2>
+    <kp>800000.0</kp>
+    <kd>8.0</kd>
     <minDepth>0.001</minDepth>
+    <maxVel>0.1</maxVel>
     <fdir1>1 0 0</fdir1>
     <material>Gazebo/FlatBlack</material>
   </gazebo>
 
   <gazebo reference="wheel_left_rear_link">
-    <mu1>1.0</mu1>
-    <mu2>1.2</mu2>
-    <kp>500000.0</kp>
-    <kd>50.0</kd>
+    <mu1>1.00</mu1>
+    <mu2>0.35</mu2>
+    <kp>800000.0</kp>
+    <kd>8.0</kd>
     <minDepth>0.001</minDepth>
+    <maxVel>0.1</maxVel>
     <fdir1>1 0 0</fdir1>
     <material>Gazebo/FlatBlack</material>
   </gazebo>
 
   <gazebo reference="wheel_right_rear_link">
-    <mu1>1.0</mu1>
-    <mu2>1.2</mu2>
-    <kp>500000.0</kp>
-    <kd>50.0</kd>
+    <mu1>1.00</mu1>
+    <mu2>0.35</mu2>
+    <kp>800000.0</kp>
+    <kd>8.0</kd>
     <minDepth>0.001</minDepth>
+    <maxVel>0.1</maxVel>
     <fdir1>1 0 0</fdir1>
     <material>Gazebo/FlatBlack</material>
   </gazebo>
@@ -162,9 +166,9 @@
       <rightFrontJoint>wheel_right_front_joint</rightFrontJoint>
       <leftRearJoint>wheel_left_rear_joint</leftRearJoint>
       <rightRearJoint>wheel_right_rear_joint</rightRearJoint>
-      <wheelSeparation>0.156</wheelSeparation>
-      <wheelDiameter>0.066</wheelDiameter>
-      <torque>12</torque>
+      <wheelSeparation>0.210</wheelSeparation>
+      <wheelDiameter>0.090</wheelDiameter>
+      <torque>18</torque>
       <broadcastTF>true</broadcastTF>
       <publishWheelTF>false</publishWheelTF>
       <publishWheelJointState>true</publishWheelJointState>

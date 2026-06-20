@@ -159,7 +159,7 @@ if ($scanOrigin -ne "0.035 0 0.085") {
 }
 
 $frontBumperJoint = $robot.joint | Where-Object { $_.name -eq "front_bumper_joint" }
-if ($frontBumperJoint.origin.xyz -ne "0.105 0 0.030") {
+if ($frontBumperJoint.origin.xyz -ne "0.130 0 0.043") {
   throw "Unexpected front_bumper_joint origin: $($frontBumperJoint.origin.xyz)"
 }
 
@@ -197,19 +197,36 @@ $wheelLeftFrontJoint = $robot.joint | Where-Object { $_.name -eq "wheel_left_fro
 $wheelRightFrontJoint = $robot.joint | Where-Object { $_.name -eq "wheel_right_front_joint" }
 $wheelLeftRearJoint = $robot.joint | Where-Object { $_.name -eq "wheel_left_rear_joint" }
 $wheelRightRearJoint = $robot.joint | Where-Object { $_.name -eq "wheel_right_rear_joint" }
-if ($wheelLeftFrontJoint.origin.xyz -ne "0.060 0.078 0.023" -or
-    $wheelRightFrontJoint.origin.xyz -ne "0.060 -0.078 0.023" -or
-    $wheelLeftRearJoint.origin.xyz -ne "-0.060 0.078 0.023" -or
-    $wheelRightRearJoint.origin.xyz -ne "-0.060 -0.078 0.023") {
+if ($wheelLeftFrontJoint.origin.xyz -ne "0.090 0.105 0.040" -or
+    $wheelRightFrontJoint.origin.xyz -ne "0.090 -0.105 0.040" -or
+    $wheelLeftRearJoint.origin.xyz -ne "-0.090 0.105 0.040" -or
+    $wheelRightRearJoint.origin.xyz -ne "-0.090 -0.105 0.040") {
   throw "Four-wheel joint origins do not match the UGV chassis layout"
+}
+
+$baseLink = $robot.link | Where-Object { $_.name -eq "base_link" }
+if ([decimal]$baseLink.inertial.mass.value -ne 2.40) {
+  throw "Base chassis mass should be 2.40kg for the scaled UGV baseline"
+}
+
+$wheelLinks = @("wheel_left_front_link", "wheel_right_front_link", "wheel_left_rear_link", "wheel_right_rear_link")
+foreach ($wheelLinkName in $wheelLinks) {
+  $wheelLink = $robot.link | Where-Object { $_.name -eq $wheelLinkName }
+  if ([decimal]$wheelLink.inertial.mass.value -ne 0.18) {
+    throw "$wheelLinkName mass should be 0.18kg"
+  }
+
+  if ([decimal]$wheelLink.collision.geometry.cylinder.radius -ne 0.045 -or [decimal]$wheelLink.collision.geometry.cylinder.length -ne 0.028) {
+    throw "$wheelLinkName collision should use radius 0.045 and length 0.028"
+  }
 }
 
 $gazeboRobot = $gazeboXml.robot
 $wheelFriction = @{
-  "wheel_left_front_link" = @("0.80", "0.25")
-  "wheel_right_front_link" = @("0.80", "0.25")
-  "wheel_left_rear_link" = @("0.80", "0.25")
-  "wheel_right_rear_link" = @("0.80", "0.25")
+  "wheel_left_front_link" = @("1.00", "0.35")
+  "wheel_right_front_link" = @("1.00", "0.35")
+  "wheel_left_rear_link" = @("1.00", "0.35")
+  "wheel_right_rear_link" = @("1.00", "0.35")
 }
 
 foreach ($wheelName in $wheelFriction.Keys) {
@@ -283,12 +300,16 @@ if ($skidSteer.leftFrontJoint -ne "wheel_left_front_joint" -or
   throw "Skid-steer plugin should drive all four wheel joints"
 }
 
-if ([decimal]$skidSteer.wheelSeparation -ne 0.156) {
-  throw "wheelSeparation should be 0.156, found $($skidSteer.wheelSeparation)"
+if ([decimal]$skidSteer.wheelSeparation -ne 0.210) {
+  throw "wheelSeparation should be 0.210, found $($skidSteer.wheelSeparation)"
 }
 
-if ([decimal]$skidSteer.wheelDiameter -ne 0.066) {
-  throw "wheelDiameter should be 0.066, found $($skidSteer.wheelDiameter)"
+if ([decimal]$skidSteer.wheelDiameter -ne 0.090) {
+  throw "wheelDiameter should be 0.090, found $($skidSteer.wheelDiameter)"
+}
+
+if ([decimal]$skidSteer.torque -ne 18) {
+  throw "Skid-steer torque should be 18, found $($skidSteer.torque)"
 }
 
 if ($skidSteer.commandTopic -ne "cmd_vel" -or $skidSteer.odometryTopic -ne "odom") {
@@ -301,12 +322,12 @@ if ($oldDiffDrive) {
 }
 
 $teleopText = Get-Content -Raw $teleop
-if ($teleopText -notmatch "MOGUARDER_MAX_LIN_VEL = 0\.16") {
-  throw "Teleop should define MoGuarder linear speed limit 0.16"
+if ($teleopText -notmatch "MOGUARDER_MAX_LIN_VEL = 0\.22") {
+  throw "Teleop should define MoGuarder linear speed limit 0.22"
 }
 
-if ($teleopText -notmatch "MOGUARDER_MAX_ANG_VEL = 0\.90") {
-  throw "Teleop should define MoGuarder angular speed limit 0.90"
+if ($teleopText -notmatch "MOGUARDER_MAX_ANG_VEL = 0\.75") {
+  throw "Teleop should define MoGuarder angular speed limit 0.75"
 }
 
 if ($teleopText -notmatch 'rospy.get_param\("~speed", MOGUARDER_MAX_LIN_VEL\)' -or
@@ -346,8 +367,8 @@ if ($teleopText -match "target_linear_vel = checkLinearLimitVelocity" -or
 }
 
 $teleopLaunchText = Get-Content -Raw $teleopLaunch
-if ($teleopLaunchText -notmatch '<param name="speed" value="0\.16"/' -or
-    $teleopLaunchText -notmatch '<param name="turn" value="0\.90"/' -or
+if ($teleopLaunchText -notmatch '<param name="speed" value="0\.22"/' -or
+    $teleopLaunchText -notmatch '<param name="turn" value="0\.75"/' -or
     $teleopLaunchText -notmatch '<param name="repeat_rate" value="10\.0"/' -or
     $teleopLaunchText -notmatch '<param name="key_timeout" value="0\.4"/') {
   throw "Teleop launch should set MoGuarder speed, turn, repeat_rate, and key_timeout"
@@ -380,7 +401,7 @@ if ($worldText -notmatch "urdf_next/turtlebot3_moguarder\.urdf\.xacro" -or
 }
 
 $dwaText = Get-Content -Raw $moguarderDwa
-if ($dwaText -notmatch "max_vel_x: 0\.16" -or $dwaText -notmatch "max_vel_theta: 0\.90") {
+if ($dwaText -notmatch "max_vel_x: 0\.22" -or $dwaText -notmatch "max_vel_theta: 0\.75") {
   throw "MoGuarder DWA params should match the skid-steer teleop limits"
 }
 
