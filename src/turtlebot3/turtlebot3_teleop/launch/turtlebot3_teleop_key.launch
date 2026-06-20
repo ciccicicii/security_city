@@ -4,5 +4,11 @@
 
   <!-- turtlebot3_teleop_key already has its own built in velocity smoother -->
   <node pkg="turtlebot3_teleop" type="turtlebot3_teleop_key" name="turtlebot3_teleop_keyboard"  output="screen">
+    <param name="speed" value="0.16"/>
+    <param name="turn" value="0.90"/>
+    <param name="speed_limit" value="0.16"/>
+    <param name="turn_limit" value="0.90"/>
+    <param name="repeat_rate" value="10.0"/>
+    <param name="key_timeout" value="0.4"/>
   </node>
 </launch>

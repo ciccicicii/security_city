@@ -1,64 +1,41 @@
 #!/usr/bin/env python
 
-# Copyright (c) 2011, Willow Garage, Inc.
-# All rights reserved.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
-#
-#    * Redistributions of source code must retain the above copyright
-#      notice, this list of conditions and the following disclaimer.
-#    * Redistributions in binary form must reproduce the above copyright
-#      notice, this list of conditions and the following disclaimer in the
-#      documentation and/or other materials provided with the distribution.
-#    * Neither the name of the Willow Garage, Inc. nor the names of its
-#      contributors may be used to endorse or promote products derived from
-#       this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
-# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-# POSSIBILITY OF SUCH DAMAGE.
+from __future__ import print_function
+
+import os
+import select
+import sys
+import threading
 
 import rospy
 from geometry_msgs.msg import Twist
-import sys, select, os
-if os.name == 'nt':
-  import msvcrt, time
-else:
-  import tty, termios
 
-BURGER_MAX_LIN_VEL = 0.22
-BURGER_MAX_ANG_VEL = 2.84
+if os.name == 'nt':
+    import msvcrt
+else:
+    import termios
+    import tty
 
 MOGUARDER_MAX_LIN_VEL = 0.16
 MOGUARDER_MAX_ANG_VEL = 0.90
 
-WAFFLE_MAX_LIN_VEL = 0.26
-WAFFLE_MAX_ANG_VEL = 1.82
-
-LIN_VEL_STEP_SIZE = 0.01
-ANG_VEL_STEP_SIZE = 0.1
-
 msg = """
-Control Your TurtleBot3!
----------------------------
+MoGuarder Skid-Steer Keyboard Teleop
+------------------------------------
 Moving around:
-        w
-   a    s    d
-        x
+   u    i    o
+   j    k    l
+   m    ,    .
 
-w/x : increase/decrease linear velocity (Burger : ~ 0.22, MoGuarder : ~ 0.16, Waffle and Waffle Pi : ~ 0.26)
-a/d : increase/decrease angular velocity (Burger : ~ 2.84, MoGuarder : ~ 0.90, Waffle and Waffle Pi : ~ 1.82)
+i/, : forward/backward
+j/l : turn left/right in place
+u/o : forward arc left/right
+m/. : backward arc left/right
+k or anything else : stop
 
-space key, s : force stop
+q/z : increase/decrease max speeds by 10%
+w/x : increase/decrease only linear speed by 10%
+e/c : increase/decrease only angular speed by 10%
 
 CTRL-C to quit
 """
@@ -67,143 +44,180 @@ e = """
 Communications Failed
 """
 
-def getKey():
+moveBindings = {
+    'i': (1, 0),
+    'o': (1, -1),
+    'j': (0, 1),
+    'l': (0, -1),
+    'u': (1, 1),
+    ',': (-1, 0),
+    '.': (-1, 1),
+    'm': (-1, -1),
+}
+
+speedBindings = {
+    'q': (1.1, 1.1),
+    'z': (.9, .9),
+    'w': (1.1, 1),
+    'x': (.9, 1),
+    'e': (1, 1.1),
+    'c': (1, .9),
+}
+
+
+class PublishThread(threading.Thread):
+    def __init__(self, rate):
+        super(PublishThread, self).__init__()
+        self.publisher = rospy.Publisher('cmd_vel', Twist, queue_size=1)
+        self.x = 0.0
+        self.th = 0.0
+        self.speed = 0.0
+        self.turn = 0.0
+        self.condition = threading.Condition()
+        self.done = False
+        self.timeout = None if rate == 0.0 else 1.0 / rate
+        self.start()
+
+    def wait_for_subscribers(self):
+        i = 0
+        while not rospy.is_shutdown() and self.publisher.get_num_connections() == 0:
+            if i == 4:
+                print("Waiting for subscriber to connect to {}".format(self.publisher.name))
+            rospy.sleep(0.5)
+            i = (i + 1) % 5
+        if rospy.is_shutdown():
+            raise Exception("Got shutdown request before subscribers connected")
+
+    def update(self, x, th, speed, turn):
+        self.condition.acquire()
+        self.x = x
+        self.th = th
+        self.speed = speed
+        self.turn = turn
+        self.condition.notify()
+        self.condition.release()
+
+    def stop(self):
+        self.done = True
+        self.update(0, 0, 0, 0)
+        self.join()
+
+    def run(self):
+        twist = Twist()
+        while not self.done:
+            self.condition.acquire()
+            self.condition.wait(self.timeout)
+
+            twist.linear.x = self.x * self.speed
+            twist.linear.y = 0.0
+            twist.linear.z = 0.0
+            twist.angular.x = 0.0
+            twist.angular.y = 0.0
+            twist.angular.z = self.th * self.turn
+
+            self.condition.release()
+            self.publisher.publish(twist)
+
+        twist.linear.x = 0.0
+        twist.linear.y = 0.0
+        twist.linear.z = 0.0
+        twist.angular.x = 0.0
+        twist.angular.y = 0.0
+        twist.angular.z = 0.0
+        self.publisher.publish(twist)
+
+
+def getKey(settings, timeout):
     if os.name == 'nt':
-        timeout = 0.1
-        startTime = time.time()
-        while(1):
-            if msvcrt.kbhit():
-                if sys.version_info[0] >= 3:
-                    return msvcrt.getch().decode()
-                else:
-                    return msvcrt.getch()
-            elif time.time() - startTime > timeout:
-                return ''
+        if msvcrt.kbhit():
+            if sys.version_info[0] >= 3:
+                return msvcrt.getch().decode()
+            return msvcrt.getch()
+        rospy.sleep(timeout)
+        return ''
 
     tty.setraw(sys.stdin.fileno())
-    rlist, _, _ = select.select([sys.stdin], [], [], 0.1)
+    rlist, _, _ = select.select([sys.stdin], [], [], timeout)
     if rlist:
         key = sys.stdin.read(1)
     else:
         key = ''
-
     termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
     return key
 
-def vels(target_linear_vel, target_angular_vel):
-    return "currently:\tlinear vel %s\t angular vel %s " % (target_linear_vel,target_angular_vel)
 
-def makeSimpleProfile(output, input, slop):
-    if input > output:
-        output = min( input, output + slop )
-    elif input < output:
-        output = max( input, output - slop )
-    else:
-        output = input
+def saveTerminalSettings():
+    if os.name == 'nt':
+        return None
+    return termios.tcgetattr(sys.stdin)
 
-    return output
 
-def constrain(input, low, high):
-    if input < low:
-      input = low
-    elif input > high:
-      input = high
-    else:
-      input = input
-
-    return input
-
-def checkLinearLimitVelocity(vel):
-    if turtlebot3_model == "burger":
-      vel = constrain(vel, -BURGER_MAX_LIN_VEL, BURGER_MAX_LIN_VEL)
-    elif turtlebot3_model == "moguarder":
-      vel = constrain(vel, -MOGUARDER_MAX_LIN_VEL, MOGUARDER_MAX_LIN_VEL)
-    elif turtlebot3_model == "waffle" or turtlebot3_model == "waffle_pi":
-      vel = constrain(vel, -WAFFLE_MAX_LIN_VEL, WAFFLE_MAX_LIN_VEL)
-    else:
-      vel = constrain(vel, -BURGER_MAX_LIN_VEL, BURGER_MAX_LIN_VEL)
-
-    return vel
-
-def checkAngularLimitVelocity(vel):
-    if turtlebot3_model == "burger":
-      vel = constrain(vel, -BURGER_MAX_ANG_VEL, BURGER_MAX_ANG_VEL)
-    elif turtlebot3_model == "moguarder":
-      vel = constrain(vel, -MOGUARDER_MAX_ANG_VEL, MOGUARDER_MAX_ANG_VEL)
-    elif turtlebot3_model == "waffle" or turtlebot3_model == "waffle_pi":
-      vel = constrain(vel, -WAFFLE_MAX_ANG_VEL, WAFFLE_MAX_ANG_VEL)
-    else:
-      vel = constrain(vel, -BURGER_MAX_ANG_VEL, BURGER_MAX_ANG_VEL)
-
-    return vel
-
-if __name__=="__main__":
+def restoreTerminalSettings(old_settings):
     if os.name != 'nt':
-        settings = termios.tcgetattr(sys.stdin)
+        termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
+
+
+def vels(speed, turn):
+    return "currently:\tspeed %.3f\tturn %.3f " % (speed, turn)
+
+
+def clamp(value, low, high):
+    return max(low, min(high, value))
+
+
+if __name__ == "__main__":
+    settings = saveTerminalSettings()
 
     rospy.init_node('turtlebot3_teleop')
-    pub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
 
-    turtlebot3_model = rospy.get_param("model", "burger")
+    speed = rospy.get_param("~speed", MOGUARDER_MAX_LIN_VEL)
+    turn = rospy.get_param("~turn", MOGUARDER_MAX_ANG_VEL)
+    speed_limit = rospy.get_param("~speed_limit", MOGUARDER_MAX_LIN_VEL)
+    turn_limit = rospy.get_param("~turn_limit", MOGUARDER_MAX_ANG_VEL)
+    repeat_rate = rospy.get_param("~repeat_rate", 10.0)
+    key_timeout = rospy.get_param("~key_timeout", 0.4)
 
+    speed = clamp(speed, 0.0, speed_limit)
+    turn = clamp(turn, 0.0, turn_limit)
+
+    pub_thread = PublishThread(repeat_rate)
+
+    x = 0
+    th = 0
     status = 0
-    target_linear_vel   = 0.0
-    target_angular_vel  = 0.0
-    control_linear_vel  = 0.0
-    control_angular_vel = 0.0
 
     try:
+        pub_thread.wait_for_subscribers()
+        pub_thread.update(x, th, speed, turn)
+
         print(msg)
+        print(vels(speed, turn))
+
         while not rospy.is_shutdown():
-            key = getKey()
-            if key == 'w' :
-                target_linear_vel = checkLinearLimitVelocity(target_linear_vel + LIN_VEL_STEP_SIZE)
-                status = status + 1
-                print(vels(target_linear_vel,target_angular_vel))
-            elif key == 'x' :
-                target_linear_vel = checkLinearLimitVelocity(target_linear_vel - LIN_VEL_STEP_SIZE)
-                status = status + 1
-                print(vels(target_linear_vel,target_angular_vel))
-            elif key == 'a' :
-                target_angular_vel = checkAngularLimitVelocity(target_angular_vel + ANG_VEL_STEP_SIZE)
-                status = status + 1
-                print(vels(target_linear_vel,target_angular_vel))
-            elif key == 'd' :
-                target_angular_vel = checkAngularLimitVelocity(target_angular_vel - ANG_VEL_STEP_SIZE)
-                status = status + 1
-                print(vels(target_linear_vel,target_angular_vel))
-            elif key == ' ' or key == 's' :
-                target_linear_vel   = 0.0
-                control_linear_vel  = 0.0
-                target_angular_vel  = 0.0
-                control_angular_vel = 0.0
-                print(vels(target_linear_vel, target_angular_vel))
+            key = getKey(settings, key_timeout)
+            if key in moveBindings:
+                x = moveBindings[key][0]
+                th = moveBindings[key][1]
+            elif key in speedBindings:
+                speed = clamp(speed * speedBindings[key][0], 0.0, speed_limit)
+                turn = clamp(turn * speedBindings[key][1], 0.0, turn_limit)
+                print(vels(speed, turn))
+                if status == 14:
+                    print(msg)
+                status = (status + 1) % 15
             else:
-                if (key == '\x03'):
+                if key == '' and x == 0 and th == 0:
+                    continue
+                x = 0
+                th = 0
+                if key == '\x03':
                     break
 
-            if status == 20 :
-                print(msg)
-                status = 0
+            pub_thread.update(x, th, speed, turn)
 
-            twist = Twist()
-
-            control_linear_vel = makeSimpleProfile(control_linear_vel, target_linear_vel, (LIN_VEL_STEP_SIZE/2.0))
-            twist.linear.x = control_linear_vel; twist.linear.y = 0.0; twist.linear.z = 0.0
-
-            control_angular_vel = makeSimpleProfile(control_angular_vel, target_angular_vel, (ANG_VEL_STEP_SIZE/2.0))
-            twist.angular.x = 0.0; twist.angular.y = 0.0; twist.angular.z = control_angular_vel
-
-            pub.publish(twist)
-
-    except:
+    except Exception:
         print(e)
 
     finally:
-        twist = Twist()
-        twist.linear.x = 0.0; twist.linear.y = 0.0; twist.linear.z = 0.0
-        twist.angular.x = 0.0; twist.angular.y = 0.0; twist.angular.z = 0.0
-        pub.publish(twist)
-
-    if os.name != 'nt':
-        termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
+        pub_thread.stop()
+        restoreTerminalSettings(settings)

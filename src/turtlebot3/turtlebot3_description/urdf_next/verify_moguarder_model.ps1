@@ -206,10 +206,10 @@ if ($wheelLeftFrontJoint.origin.xyz -ne "0.060 0.078 0.023" -or
 
 $gazeboRobot = $gazeboXml.robot
 $wheelFriction = @{
-  "wheel_left_front_link" = @("0.75", "0.35")
-  "wheel_right_front_link" = @("0.75", "0.35")
-  "wheel_left_rear_link" = @("0.85", "0.40")
-  "wheel_right_rear_link" = @("0.85", "0.40")
+  "wheel_left_front_link" = @("0.80", "0.25")
+  "wheel_right_front_link" = @("0.80", "0.25")
+  "wheel_left_rear_link" = @("0.80", "0.25")
+  "wheel_right_rear_link" = @("0.80", "0.25")
 }
 
 foreach ($wheelName in $wheelFriction.Keys) {
@@ -309,12 +309,48 @@ if ($teleopText -notmatch "MOGUARDER_MAX_ANG_VEL = 0\.90") {
   throw "Teleop should define MoGuarder angular speed limit 0.90"
 }
 
-if ($teleopText -notmatch 'turtlebot3_model == "moguarder"') {
-  throw "Teleop should handle the moguarder model explicitly"
+if ($teleopText -notmatch 'rospy.get_param\("~speed", MOGUARDER_MAX_LIN_VEL\)' -or
+    $teleopText -notmatch 'rospy.get_param\("~turn", MOGUARDER_MAX_ANG_VEL\)') {
+  throw "Teleop should use private MoGuarder speed and turn parameters"
 }
 
-if ($teleopText -notmatch "MoGuarder : ~ 0\.16") {
-  throw "Teleop help text should mention MoGuarder speed limits"
+if ($teleopText -notmatch "MoGuarder Skid-Steer Keyboard Teleop") {
+  throw "Teleop help text should describe the MoGuarder skid-steer mode"
+}
+
+if ($teleopText -notmatch "moveBindings" -or
+    $teleopText -notmatch "'i': \([ ]*1, [ ]*0\)" -or
+    $teleopText -notmatch "'I': \([ ]*1, [ ]*0\)" -or
+    $teleopText -notmatch "'j': \([ ]*0, [ ]*1\)" -or
+    $teleopText -notmatch "',': \([ ]*-1, [ ]*0\)" -or
+    $teleopText -notmatch "'m': \([ ]*-1, [ ]*0\)" -or
+    $teleopText -notmatch "'M': \([ ]*-1, [ ]*0\)") {
+  throw "Teleop should use teleop_twist_keyboard-style directional bindings"
+}
+
+if ($teleopText -notmatch "speedBindings" -or
+    $teleopText -notmatch "'q': \([ ]*1\.1, [ ]*1\.1\)" -or
+    $teleopText -notmatch "'e': \([ ]*1, [ ]*1\.1\)") {
+  throw "Teleop should use teleop_twist_keyboard-style speed bindings"
+}
+
+if ($teleopText -notmatch "class PublishThread" -or
+    $teleopText -notmatch "key_timeout" -or
+    $teleopText -notmatch "repeat_rate") {
+  throw "Teleop should publish through a repeat thread with key timeout"
+}
+
+if ($teleopText -match "target_linear_vel = checkLinearLimitVelocity" -or
+    $teleopText -match "target_angular_vel = checkAngularLimitVelocity") {
+  throw "Teleop should not use TurtleBot3 incremental velocity accumulation"
+}
+
+$teleopLaunchText = Get-Content -Raw $teleopLaunch
+if ($teleopLaunchText -notmatch '<param name="speed" value="0\.16"/' -or
+    $teleopLaunchText -notmatch '<param name="turn" value="0\.90"/' -or
+    $teleopLaunchText -notmatch '<param name="repeat_rate" value="10\.0"/' -or
+    $teleopLaunchText -notmatch '<param name="key_timeout" value="0\.4"/') {
+  throw "Teleop launch should set MoGuarder speed, turn, repeat_rate, and key_timeout"
 }
 
 $launchExpectations = @{
