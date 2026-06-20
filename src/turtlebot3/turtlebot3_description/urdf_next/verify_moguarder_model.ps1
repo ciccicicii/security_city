@@ -75,6 +75,8 @@ $expectedLinks = @(
   "left_side_plate_link",
   "right_side_plate_link",
   "lidar_mount_link",
+  "camera_mount_link",
+  "camera_link",
   "top_comm_module_link",
   "left_range_link",
   "right_range_link",
@@ -108,6 +110,8 @@ $expectedJoints = @(
   "left_side_plate_joint",
   "right_side_plate_joint",
   "lidar_mount_joint",
+  "camera_mount_joint",
+  "camera_joint",
   "top_comm_module_joint",
   "left_range_joint",
   "right_range_joint",
@@ -175,6 +179,16 @@ if ($frontBumperJoint.origin.xyz -ne "0.118 0 0.043") {
 $lidarMountJoint = $robot.joint | Where-Object { $_.name -eq "lidar_mount_joint" }
 if ($lidarMountJoint.origin.xyz -ne "0.060 0 0.075") {
   throw "Unexpected lidar_mount_joint origin: $($lidarMountJoint.origin.xyz)"
+}
+
+$cameraMountJoint = $robot.joint | Where-Object { $_.name -eq "camera_mount_joint" }
+if ($cameraMountJoint.origin.xyz -ne "0.080 0 0.105") {
+  throw "Unexpected camera_mount_joint origin: $($cameraMountJoint.origin.xyz)"
+}
+
+$cameraJoint = $robot.joint | Where-Object { $_.name -eq "camera_joint" }
+if ($cameraJoint.origin.xyz -ne "0.018 0 0.020") {
+  throw "Unexpected camera_joint origin: $($cameraJoint.origin.xyz)"
 }
 
 $topCommJoint = $robot.joint | Where-Object { $_.name -eq "top_comm_module_joint" }
@@ -268,6 +282,10 @@ if ([int]$horizontal.samples -ne 720) {
   throw "Laser samples should be 720, found $($horizontal.samples)"
 }
 
+if ([decimal]$horizontal.min_angle -ne -2.35619 -or [decimal]$horizontal.max_angle -ne 2.35619) {
+  throw "Laser horizontal angle should be front 270 degrees (-2.35619 to 2.35619), found $($horizontal.min_angle) to $($horizontal.max_angle)"
+}
+
 $range = $sensor.ray.range
 if ([decimal]$range.max -ne 4.0) {
   throw "Laser max range should be 4.0, found $($range.max)"
@@ -276,6 +294,34 @@ if ([decimal]$range.max -ne 4.0) {
 $noise = $sensor.ray.noise
 if ([decimal]$noise.stddev -ne 0.005) {
   throw "Laser noise stddev should be 0.005, found $($noise.stddev)"
+}
+
+$cameraBlock = $gazeboRobot.gazebo | Where-Object { $_.reference -eq "camera_link" }
+if (-not $cameraBlock) {
+  throw "camera_link Gazebo sensor block missing"
+}
+
+$cameraSensor = $cameraBlock.sensor
+if ($cameraSensor.type -ne "camera" -or $cameraSensor.name -ne "moguarder_front_camera") {
+  throw "Front camera sensor should be a Gazebo camera named moguarder_front_camera"
+}
+
+if ([int]$cameraSensor.update_rate -ne 30) {
+  throw "Front camera update_rate should be 30, found $($cameraSensor.update_rate)"
+}
+
+if ([int]$cameraSensor.camera.image.width -ne 640 -or [int]$cameraSensor.camera.image.height -ne 480) {
+  throw "Front camera image size should be 640x480"
+}
+
+if ($cameraSensor.plugin.filename -ne "libgazebo_ros_camera.so") {
+  throw "Front camera should use libgazebo_ros_camera.so, found $($cameraSensor.plugin.filename)"
+}
+
+if ($cameraSensor.plugin.imageTopicName -ne "/camera/rgb/image_raw" -or
+    $cameraSensor.plugin.cameraInfoTopicName -ne "/camera/rgb/camera_info" -or
+    $cameraSensor.plugin.frameName -ne "camera_link") {
+  throw "Front camera topics/frame are not configured for RGB model training"
 }
 
 $leftRangeBlock = $gazeboRobot.gazebo | Where-Object { $_.reference -eq "left_range_link" }
